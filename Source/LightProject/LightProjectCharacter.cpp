@@ -28,8 +28,8 @@ ALightProjectCharacter::ALightProjectCharacter()
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	// set our turn rates for input
-	BaseTurnRate = 6.f;
-	BaseLookUpRate = 65.f;
+	BaseTurnRate = 35.f;
+	BaseLookUpRate = 35.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
