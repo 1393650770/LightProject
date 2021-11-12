@@ -2,6 +2,12 @@
 开发日志：
 https://www.yuque.com/docs/share/ef8cf45f-f5d9-49ef-8d6d-64566b707eaf?# 《光子大作业开发日志》
 
+当前这次作业【骨骼动画】的项目源码在主分支master上
+演示视频及其APK：
+
+完成了基础题目以及附加题
+
+第三次作业-UMG的作业项目源码在分支UMG_Homework上
 演示视频以及APK：
 链接：https://pan.baidu.com/s/1texKI9DKmFmBS1jzlfDamQ 
 提取码：Tece
