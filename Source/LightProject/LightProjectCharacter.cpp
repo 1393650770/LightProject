@@ -57,6 +57,10 @@ ALightProjectCharacter::ALightProjectCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 	Health = MaxHealth;
 
+	DefaultFOV = FollowCamera->FieldOfView;
+
+	TargetFOV = FollowCamera->FieldOfView;
+
 
 }
 
@@ -94,21 +98,95 @@ void ALightProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ALightProjectCharacter::OnResetVR);
+
+	// Change into Ironsight mode
+	PlayerInputComponent->BindAction("Irosights", IE_Pressed, this, &ALightProjectCharacter::ChangeToIronSight);
+
+	// Change into FreeView mode
+	PlayerInputComponent->BindAction("FreeView", IE_Pressed, this, &ALightProjectCharacter::ChangeToFreeView);
+
 }
 
 void ALightProjectCharacter::MouseTurn(float Val)
 {
-	APawn::AddControllerYawInput(Val);
-	FRotator ControlRotation = GetControlRotation();
-	FRotator ActorRotation = GetActorRotation();
-	if (abs(ControlRotation.Yaw - ActorRotation.Yaw) > 89.0f)
+
+		APawn::AddControllerYawInput(Val);
+		FRotator ControlRotation = GetControlRotation();
+		FRotator ActorRotation = GetActorRotation();
+		if (!bIsFreeView)
+		{
+			if (abs(ControlRotation.Yaw - ActorRotation.Yaw) > 89.0f)
+			{
+				SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 5.0f));
+			}
+			if (ACharacter::bIsCrouched)
+			{
+				SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 10.0f));
+			}
+		}
+}
+
+void ALightProjectCharacter::ChangeToFreeView()
+{
+	if (!bIsFreeView)
 	{
-		SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 5.0f));
+		bIsFreeView = true;
+		bIsChangeAwayFromFreeView = false;	
+		FreeViewRotation = Controller->GetControlRotation();
 	}
-	if (ACharacter::bIsCrouched)
+	else
 	{
-		SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 10.0f));
+		bIsFreeView = false;
+
 	}
+}
+
+void ALightProjectCharacter::ChangeLeaveFreeViewTick(float DeltaTime)
+{
+	
+	if (!bIsFreeView)
+	{
+		if (bIsChangeAwayFromFreeView)
+		{
+
+			FRotator CurrentRotation = CameraBoom->GetTargetRotation();
+			if ((FMath::Abs(CurrentRotation.Yaw - FreeViewRotation.Yaw) > 10.0f))
+			{
+				FRotator LerpRotation = FMath::RInterpTo(CurrentRotation, FreeViewRotation, DeltaTime, IronsightInterpSpeed );
+				Controller->SetControlRotation(LerpRotation);
+			}
+			else
+			{
+				bIsChangeAwayFromFreeView = false;
+			}
+			
+
+		}
+	}
+}
+
+
+
+void ALightProjectCharacter::ChangeToIronSight()
+{
+	if (!bIsIronsight)
+	{
+		bIsIronsight = true;
+		TargetFOV = IronsightFOV;
+		
+	}
+	else
+	{
+		bIsIronsight = false;
+		TargetFOV = DefaultFOV;
+	}
+}
+
+void ALightProjectCharacter::ChangeToIronSightTick(float DeltaTime)
+{
+	float currentFOV = FollowCamera->FieldOfView;
+	float lerpFOV = FMath::FInterpTo(currentFOV, TargetFOV, DeltaTime, IronsightInterpSpeed);
+	FollowCamera->SetFieldOfView(lerpFOV);
 }
 
 float ALightProjectCharacter::GetHealthToPercent() const
@@ -119,6 +197,11 @@ float ALightProjectCharacter::GetHealthToPercent() const
 float ALightProjectCharacter::GetHealthToFloat() const
 {
 	return Health;
+}
+
+bool ALightProjectCharacter::GetbIsIronsight() const
+{
+	return bIsIronsight;
 }
 
 void ALightProjectCharacter::CreateDefaultShootWeapon()
@@ -263,8 +346,16 @@ void ALightProjectCharacter::MoveForward(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
+		 FRotator Rotation;
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		if (!bIsFreeView)
+		{
+			Rotation = Controller->GetControlRotation();
+		}
+		else
+		{
+			Rotation = FreeViewRotation;
+		}
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
@@ -277,8 +368,16 @@ void ALightProjectCharacter::MoveRight(float Value)
 {
 	if ( (Controller != nullptr) && (Value != 0.0f) )
 	{
+		FRotator Rotation;
 		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
+		if (!bIsFreeView)
+		{
+			Rotation = Controller->GetControlRotation();
+		}
+		else
+		{
+			Rotation = FreeViewRotation;
+		}
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 		// get right vector 

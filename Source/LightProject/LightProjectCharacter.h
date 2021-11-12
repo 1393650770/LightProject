@@ -103,13 +103,25 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	bool bIsGameOver = false;
 
+	UFUNCTION(BlueprintCallable, Category = Player)
+	void CreateDefaultShootWeapon();
+
 	UFUNCTION()
 	void MouseTurn(float Val);
 
+	UFUNCTION(BlueprintCallable, Category = Player)
+	void ChangeToFreeView();
+
+	UFUNCTION(BlueprintCallable, Category = Player)
+	void ChangeLeaveFreeViewTick(float DeltaTime);
 
 
 	UFUNCTION(BlueprintCallable, Category = Player)
-	void CreateDefaultShootWeapon();
+	void ChangeToIronSightTick(float DeltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = Player)
+	void ChangeToIronSight();
+
 	UFUNCTION()
 	void StartCrouch();
 	UFUNCTION()
@@ -146,6 +158,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Player)
 	float GetHealthToFloat() const;
+
+	UFUNCTION(BlueprintCallable, Category = Player)
+	bool GetbIsIronsight() const;
 /// <summary>
 /// 自定义的protected属性
 /// </summary>
@@ -164,6 +179,28 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	ALightProjectWeapon* Weapon=nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	bool bIsIronsight = false;
+
+	float TargetFOV;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	bool bIsFreeView = false;
+
+	bool bIsChangeAwayFromFreeView = false;
+
+	FRotator FreeViewRotation;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	float DefaultFOV =50.0f;
+
+	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
+	float IronsightFOV = 50.0f;
+		
+	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
+	float IronsightInterpSpeed = 50.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	EWeaponType WeaponType = EWeaponType::Fist;

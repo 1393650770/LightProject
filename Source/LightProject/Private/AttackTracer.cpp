@@ -30,43 +30,50 @@ void UAttackTracer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 	{
 		float HitBaseDamage = rand() % 20 + 1;
 		UWorld* World = Player->GetWorld();
-		FVector NowLeftPosition = MeshComp->GetSocketLocation(LeftSocketName);
-		FVector NowRightPosition = MeshComp->GetSocketLocation(RightSocketName);
-		FVector HitDirection = NowLeftPosition - LastLocation1;
-		UKismetSystemLibrary::LineTraceMulti(World, LastLocation1, NowLeftPosition, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true);
-		//UKismetSystemLibrary::BoxTraceMulti(World, LastLocation1, MeshComp->GetSocketLocation(LeftSocketName), FVector(5, 30, 50), MeshComp->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true);
 		
-		//World->LineTraceMultiByChannel(HitResult, LastLocation1, NowLeftPosition, ECC_Visibility, QueryParams)
-		for (int i = 0; i < HitResult.Num(); i++)
+		FVector HitDirection;
+		if (!LeftSocketName.IsNone())
 		{
-			AActor* HitActor = HitResult[i].GetActor();//获取本次射线击中的Actor//
-			if (!HitActors.Contains(HitActor))//查询数组中是否有本次击中的Actor，如果没有则添加进数组并调用自带伤害函数，防止一次通知内多次击中的情况//
+			FVector NowLeftPosition = MeshComp->GetSocketLocation(LeftSocketName);
+			HitDirection = NowLeftPosition - LastLocation1;
+			UKismetSystemLibrary::LineTraceMulti(World, LastLocation1, NowLeftPosition, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true);
+			//UKismetSystemLibrary::BoxTraceMulti(World, LastLocation1, MeshComp->GetSocketLocation(LeftSocketName), FVector(5, 30, 50), MeshComp->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true);
+
+			//World->LineTraceMultiByChannel(HitResult, LastLocation1, NowLeftPosition, ECC_Visibility, QueryParams)
+			for (int i = 0; i < HitResult.Num(); i++)
 			{
-				HitActors.Add(HitActor);
-				HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
-				UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], EventInstigator, Player, DamageTypeClass);
-				//UGameplayStatics::ApplyDamage(HitActor, 20.f, EventInstigator, Player, DamageTypeClass);
+				AActor* HitActor = HitResult[i].GetActor();//获取本次射线击中的Actor//
+				if (!HitActors.Contains(HitActor))//查询数组中是否有本次击中的Actor，如果没有则添加进数组并调用自带伤害函数，防止一次通知内多次击中的情况//
+				{
+					HitActors.Add(HitActor);
+					HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
+					UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], EventInstigator, Player, DamageTypeClass);
+					//UGameplayStatics::ApplyDamage(HitActor, 20.f, EventInstigator, Player, DamageTypeClass);
+				}
 			}
+			//一次Tick过后更新当前插槽的位置变量，下一次再与存储的变量做差值//
+			LastLocation1 = MeshComp->GetSocketLocation(LeftSocketName);
 		}
-		//第二个插槽//
-		UKismetSystemLibrary::LineTraceMulti(World, LastLocation2, NowRightPosition, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true);
-		//UKismetSystemLibrary::BoxTraceMulti(World, LastLocation2, MeshComp->GetSocketLocation(RightSocketName), FVector(5, 30, 50), MeshComp->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true);
-		
-		HitDirection = NowRightPosition - LastLocation2;
-		for (int i = 0; i < HitResult.Num(); i++)
+		if (!RightSocketName.IsNone())
 		{
-			AActor* HitActor = HitResult[i].GetActor();
-			if (!HitActors.Contains(HitActor))
+			//第二个插槽//
+			FVector NowRightPosition = MeshComp->GetSocketLocation(RightSocketName);
+			UKismetSystemLibrary::LineTraceMulti(World, LastLocation2, NowRightPosition, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true);
+			HitDirection = NowRightPosition - LastLocation2;
+			for (int i = 0; i < HitResult.Num(); i++)
 			{
-				HitActors.Add(HitActor);
-				HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
-				UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], EventInstigator, Player, DamageTypeClass);
-				//UGameplayStatics::ApplyDamage(HitActor, 20.f, EventInstigator, Player, DamageTypeClass);
+				AActor* HitActor = HitResult[i].GetActor();
+				if (!HitActors.Contains(HitActor))
+				{
+					HitActors.Add(HitActor);
+					HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
+					UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], EventInstigator, Player, DamageTypeClass);
+					//UGameplayStatics::ApplyDamage(HitActor, 20.f, EventInstigator, Player, DamageTypeClass);
+				}
 			}
+			//一次Tick过后更新当前插槽的位置变量，下一次再与存储的变量做差值//
+			LastLocation2 = MeshComp->GetSocketLocation(RightSocketName);
 		}
-		//一次Tick过后更新当前插槽的位置变量，下一次再与存储的变量做差值//
-		LastLocation1 = MeshComp->GetSocketLocation(LeftSocketName);
-		LastLocation2 = MeshComp->GetSocketLocation(RightSocketName);
 
 	}
 
