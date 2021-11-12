@@ -6,7 +6,7 @@ https://www.yuque.com/docs/share/ef8cf45f-f5d9-49ef-8d6d-64566b707eaf?# 《光�
 二.当前这次作业【骨骼动画】的项目源码在主分支master上
 演示视频及其APK：
 
-链接：https://pan.baidu.com/s/117gxlEE0-elf8Eu22PVEFw 
+链接：https://pan.baidu.com/share/init?surl=ed3LM_IOTEsptTxYVjFp2g
 提取码：Tece
 
 完成了基础题目以及附加题
