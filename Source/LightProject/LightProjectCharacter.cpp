@@ -328,6 +328,10 @@ void ALightProjectCharacter::CheckGroundObjects()
 			}
 		}
 	}
+	else
+	{
+		OnCheckGroundNoObjects();
+	}
 }
 
 void ALightProjectCharacter::TurnAtRate(float Rate)

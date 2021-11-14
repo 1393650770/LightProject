@@ -51,6 +51,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
 	FName TraceTargetName = TEXT("Target");
 
+	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	EWeaponMaster WeaponMaster = EWeaponMaster::None;
+
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Weapon)
 	bool bIsFireAlways = false;
 

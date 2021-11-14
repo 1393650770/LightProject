@@ -10,13 +10,24 @@ class ALightProjectWeapon;
 class FFloat16;
 class AActor;
 
+
 UENUM(BlueprintType)
 enum class EWeaponType :uint8
 {
-	Fist,
-	Rifle,
-	Launcher
+	Fist=0,
+	Rifle=1,
+	Launcher=2
 };
+
+UENUM(BlueprintType)
+enum class EWeaponMaster :uint8
+{
+	Default=0,
+	None=10,
+	Player=11,
+	Enemy=12
+};
+
 
 USTRUCT(BlueprintType)
 struct FWeaponSlot
@@ -134,6 +145,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnCheckGroundObjects(FHitResult Hit,bool& Result);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Player)
+	void OnCheckGroundNoObjects();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnChangerCharacterHealth();
