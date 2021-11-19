@@ -30,9 +30,20 @@ class LIGHTPROJECT_API ALightProjectProjectile : public AActor
 protected:
 
 
+
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI)
 	UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 
+	UPROPERTY(BlueprintReadWrite, Category = Sound)
+	FTimerHandle TimerHandle_HitSoundCooldown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+	float HitSoundCooldownTime=1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Sound)
+	bool bIsCanPlayHitSound = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
 	USoundBase* HitSound;
@@ -72,6 +83,11 @@ protected:
 	void Broken();
 
 	void ChangeBounciness(const FHitResult& Hit);
+
+	UFUNCTION(BlueprintCallable, Category = Sound)
+	void ComeInCooldownHitSound();
+
+	void ChangebIsCanPlayHitSoundToTrue();
 
 public:
 	ALightProjectProjectile();

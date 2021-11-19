@@ -61,9 +61,10 @@ void ALightProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherA
 		return;
 	}
 
-	if (HitSound != nullptr)
+	if (HitSound != nullptr&& bIsCanPlayHitSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
+		ComeInCooldownHitSound();
 	}
 	float CurrentSpeed = FMath::Abs(UKismetMathLibrary::VSize(GetVelocity()));
 	// Only add impulse and destroy projectile if we hit a physics
@@ -162,5 +163,19 @@ void ALightProjectProjectile::ChangeBounciness(const FHitResult& Hit)
 		ProjectileMovement->Friction = 0.2f;
 		break;
 	}
+}
+
+void ALightProjectProjectile::ComeInCooldownHitSound()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_HitSoundCooldown);
+	FTimerDelegate ChangebIsCanFireToTrueDelegate = FTimerDelegate::CreateUObject(this, &ALightProjectProjectile::ChangebIsCanPlayHitSoundToTrue);
+	GetWorldTimerManager().SetTimer(TimerHandle_HitSoundCooldown, ChangebIsCanFireToTrueDelegate, HitSoundCooldownTime, false);
+	bIsCanPlayHitSound = false;
+}
+
+void ALightProjectProjectile::ChangebIsCanPlayHitSoundToTrue()
+{
+	bIsCanPlayHitSound = true;
+	GetWorldTimerManager().ClearTimer(TimerHandle_HitSoundCooldown);
 }
 

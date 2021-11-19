@@ -35,6 +35,7 @@ void ALightProjectWeapon::ComeInCooldownFire()
 void ALightProjectWeapon::ChangebIsCanFireToTrue()
 {
 	bIsCanFire = true;
+	GetWorldTimerManager().ClearTimer(TimerHandle_FireCooldown);
 }
 
 void ALightProjectWeapon::Fire()
