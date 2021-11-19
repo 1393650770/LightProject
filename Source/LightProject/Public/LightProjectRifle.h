@@ -6,6 +6,7 @@
 #include "LightProjectWeapon.h"
 #include "LightProjectRifle.generated.h"
 
+class ALightProjectProjectile;
 /**
  * 
  */
@@ -16,5 +17,7 @@ class LIGHTPROJECT_API ALightProjectRifle : public ALightProjectWeapon
 public:
 	ALightProjectRifle();
 protected:
+
+
 	void Fire() override;
 };

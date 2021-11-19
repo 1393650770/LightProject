@@ -28,6 +28,9 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category = "FireArea")
+	int CurrentInAreaPeople=0;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UBoxComponent* OverlapComp;
 

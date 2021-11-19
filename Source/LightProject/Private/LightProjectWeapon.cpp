@@ -12,6 +12,7 @@
 #include "Chaos/ChaosEngineInterface.h"
 #include "GameFramework/Character.h"
 #include "LightProject/LightProjectCharacter.h"
+#include <Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 
 
 // Sets default values
@@ -23,9 +24,29 @@ ALightProjectWeapon::ALightProjectWeapon()
 	RootComponent = MeshComp;
 }
 
+void ALightProjectWeapon::ComeInCooldownFire()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_FireCooldown);
+	FTimerDelegate ChangebIsCanFireToTrueDelegate = FTimerDelegate::CreateUObject(this, &ALightProjectWeapon::ChangebIsCanFireToTrue);
+	GetWorldTimerManager().SetTimer(TimerHandle_FireCooldown, ChangebIsCanFireToTrueDelegate, FireCooldownTime, false);
+	bIsCanFire = false;
+}
+
+void ALightProjectWeapon::ChangebIsCanFireToTrue()
+{
+	bIsCanFire = true;
+}
+
 void ALightProjectWeapon::Fire()
 {
-
+	if (!bIsCanFire)
+	{
+		return;
+	}
+	if (FireSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
 	AActor* const MyOwner = GetOwner();
 	UWorld* const World = GetWorld();
 	APawn* const MyPawn = UGameplayStatics::GetPlayerPawn(this, 0);
@@ -50,15 +71,15 @@ void ALightProjectWeapon::Fire()
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(MyOwner);
 		QueryParams.AddIgnoredActor(this);
-		QueryParams.bTraceComplex=true;
-		QueryParams.bReturnPhysicalMaterial=true;
+		QueryParams.bTraceComplex = true;
+		QueryParams.bReturnPhysicalMaterial = true;
 
 
 		FVector TraceEndPoint = TraceEnd;
 
 		FHitResult Hit;
 
-		
+
 		if (World->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams))
 		{
 			AActor* HitActor = Hit.GetActor();
@@ -126,5 +147,59 @@ void ALightProjectWeapon::Fire()
 		{
 			UE_LOG(LogTemp, Log, TEXT("Don't Get TraceEmitter"));
 		}
+		ComeInCooldownFire();
 	}
+}
+
+FVector ALightProjectWeapon::RayTraceShootingSight()
+{
+	AActor* const MyOwner = GetOwner();
+
+	UWorld* const World = GetWorld();
+	FVector EyeLocation;
+	FRotator EyeRotation;
+	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+	FVector ShootDirection = EyeRotation.Vector();
+	FVector TraceEnd = EyeLocation + ShootDirection * 10000.0f;
+	if (!MyOwner)
+		return TraceEnd;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(MyOwner);
+	QueryParams.AddIgnoredActor(this);
+
+	FHitResult Hit;
+
+
+	if (World->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		return Hit.ImpactPoint;
+	}
+	return TraceEnd;
+}
+
+FRotator ALightProjectWeapon::GetProjectileRotation(FHitResult& Hit,bool& result)
+{
+	FRotator FinalRotator = FRotator::ZeroRotator;
+	AActor* const MyOwner = GetOwner();
+	if (!MyOwner)
+		return FinalRotator;
+	UWorld* const World = GetWorld();
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(MyOwner);
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.bTraceComplex = true;
+	QueryParams.bReturnPhysicalMaterial = true;
+
+	FVector SelfLocation= MeshComp->GetSocketLocation(MuzzleSoketName);
+	FRotator SelfRotation=MeshComp->GetComponentRotation();
+	FVector TraceEnd = RayTraceShootingSight();
+
+	if (World->LineTraceSingleByChannel(Hit, SelfLocation, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		TraceEnd = Hit.ImpactPoint;
+		result = true;
+	}
+
+	FinalRotator = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TraceEnd);
+	return FinalRotator;
 }

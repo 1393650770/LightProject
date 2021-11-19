@@ -80,7 +80,6 @@ void ALightProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ALightProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ALightProjectCharacter::MoveRight);
-
 	
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
@@ -204,6 +203,11 @@ bool ALightProjectCharacter::GetbIsIronsight() const
 	return bIsIronsight;
 }
 
+bool ALightProjectCharacter::GetbIsPlayerSelf() const
+{
+	return bIsPlayerSelf;
+}
+
 void ALightProjectCharacter::CreateDefaultShootWeapon()
 {
 	FActorSpawnParameters ActorSpawnParams;
@@ -219,14 +223,35 @@ void ALightProjectCharacter::ChangeHealth(float value)
 {
 	if (!bIsGameOver)
 	{
-		Health = FMath::Clamp(Health + value, 0.0f, MaxHealth);
+		if(value<0)
+			Health = FMath::Clamp(Health + value, 0.0f, MaxHealth);
+		else
+		{
+			Health = FMath::Clamp(Health - value, 0.0f, MaxHealth);
+		}
 		if (Health < 0.01f)
 		{
-			ALightProjectGameMode* GameMode = Cast<ALightProjectGameMode>(GetWorld()->GetAuthGameMode());
-			OnChangerCharacterHealth();
-			if (GameMode)
+			StopAnimMontage(GetCurrentMontage());
+			for (int i = 0; i < AnimMontageArray.Num(); i++)
 			{
-				GameMode->PlayerOver(UGameplayStatics::GetPlayerPawn(this, 0));
+				if (AnimMontageArray[i])
+				{
+					StopAnimMontage(AnimMontageArray[i]);
+				}
+			}
+			OnChangerCharacterHealth();
+			if (bIsPlayerSelf)
+			{
+				ALightProjectGameMode* GameMode = Cast<ALightProjectGameMode>(GetWorld()->GetAuthGameMode());
+				if (GameMode)
+				{
+
+					if (bIsPlayerSelf)
+					{
+
+						GameMode->PlayerOver(UGameplayStatics::GetPlayerPawn(this, 0));
+					}
+				}
 			}
 		}
 	}
@@ -234,7 +259,12 @@ void ALightProjectCharacter::ChangeHealth(float value)
 
 void ALightProjectCharacter::ChangePlayerTotalDamage(int value)
 {
-	PlayerTotalDamage += value;
+	if(value>0)
+		PlayerTotalDamage += value;
+	else
+	{
+		PlayerTotalDamage -= value;
+	}
 }
 
 

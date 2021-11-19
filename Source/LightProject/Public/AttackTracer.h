@@ -6,6 +6,7 @@
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "AttackTracer.generated.h"
 
+class ALightProjectCharacter;
 /**
  * 
  */
@@ -15,7 +16,10 @@ class LIGHTPROJECT_API UAttackTracer : public UAnimNotifyState
 	GENERATED_BODY()
 protected:
 	float QuerySurfaceTypeToChangeBaseDamage(const FHitResult& Hit);
+
+	ALightProjectCharacter* MyCharacter=nullptr;
 public:
+
 
 	FCollisionQueryParams QueryParams;
 

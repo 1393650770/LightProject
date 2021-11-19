@@ -27,21 +27,32 @@ void AHurtArea::HandleOverlapStart(UPrimitiveComponent* OverlappedComponent, AAc
 	UE_LOG(LogTemp, Log, TEXT("Enter HurtArea"));
 	ALightProjectCharacter* MyPawn = Cast<ALightProjectCharacter>(OtherActor);
 
-	if (MyPawn == nullptr)
+	if (MyPawn == nullptr|| !(MyPawn->GetbIsPlayerSelf()))
 	{
 		return;
 	}
-	GetWorldTimerManager().ClearTimer(TimerHandle_Hurt);
-	FTimerDelegate HurtPlayerDelegate= FTimerDelegate::CreateUObject(this, &AHurtArea::HurtPlayer, MyPawn);
-	GetWorldTimerManager().SetTimer(TimerHandle_Hurt, HurtPlayerDelegate, HurtPlayerDelayTime, true);
+	
+	if (CurrentInAreaPeople == 0)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Hurt);
+		FTimerDelegate HurtPlayerDelegate = FTimerDelegate::CreateUObject(this, &AHurtArea::HurtPlayer, MyPawn);
+		GetWorldTimerManager().SetTimer(TimerHandle_Hurt, HurtPlayerDelegate, HurtPlayerDelayTime, true);
+	}
+	CurrentInAreaPeople++;
 }
 
 
 
 void AHurtArea::HandleOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Log, TEXT("Exit	 HurtArea"));
-	GetWorldTimerManager().ClearTimer(TimerHandle_Hurt);
+	if (CurrentInAreaPeople > 0)
+	{
+		CurrentInAreaPeople--;
+	}
+	if (CurrentInAreaPeople <= 0)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Hurt);
+	}
 }
 
 void AHurtArea::SetPlayerState(EPlayerState NewState)
@@ -60,6 +71,5 @@ void AHurtArea::HurtPlayer(ALightProjectCharacter* MyPawn)
 	{
 		UGameplayStatics::ApplyDamage(MyPawn, hurtNum, nullptr, this, DamageTypeClass);
 	}
-	//MyPawn->ChangeHealth(hurtNum);
-	UE_LOG(LogTemp, Log, TEXT("%f"), hurtNum);
+
 }

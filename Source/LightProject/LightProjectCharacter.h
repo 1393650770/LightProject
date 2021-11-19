@@ -9,7 +9,7 @@
 class ALightProjectWeapon;
 class FFloat16;
 class AActor;
-
+class UAnimMontage;
 
 UENUM(BlueprintType)
 enum class EWeaponType :uint8
@@ -175,12 +175,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Player)
 	bool GetbIsIronsight() const;
+
+	UFUNCTION(BlueprintCallable, Category = Player)
+	bool GetbIsPlayerSelf() const;
 /// <summary>
 /// 自定义的protected属性
 /// </summary>
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Player)
+	bool bIsPlayerSelf = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Player)
 	FName PlayerName = TEXT("Player");
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player)
@@ -191,7 +196,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player)
 	int32 PlayerTotalDamage = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
 	ALightProjectWeapon* Weapon=nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
@@ -233,5 +238,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Player)
 	TArray<FWeaponSlot> WeaponList;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Anim)
+	TArray<UAnimMontage*> AnimMontageArray;
+
 };
 

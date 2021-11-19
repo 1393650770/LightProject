@@ -6,6 +6,8 @@
 #include "LightProjectWeapon.h"
 #include "LightProjectLauncher.generated.h"
 
+class ALightProjectProjectile;
+
 /**
  * 
  */
@@ -17,6 +19,11 @@ public:
 	ALightProjectLauncher();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<ALightProjectProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	FRotator CameraRotatorOffset;
 
 	void Fire() override;
 };

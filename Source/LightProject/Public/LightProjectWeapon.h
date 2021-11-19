@@ -11,9 +11,12 @@
 class USkeletalMeshComponent;
 class UParticleSystem;
 class UDamageType;
+class USoundBase;
+
+
 
 UCLASS()
-class LIGHTPROJECT_API ALightProjectWeapon : public AActor
+class LIGHTPROJECT_API ALightProjectWeapon : public AActor 
 {
 	GENERATED_BODY()
 	
@@ -35,14 +38,13 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category=Components)
 	USkeletalMeshComponent* MeshComp;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category = WeaponEffect)
 	UParticleSystem* TraceEmitter;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponEffect)
 	UParticleSystem* ExplosionEffect;
 
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponEffect)
 	UParticleSystem* FireEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
@@ -54,14 +56,32 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = Weapon)
 	EWeaponMaster WeaponMaster = EWeaponMaster::None;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponSound)
+	USoundBase* FireSound;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Fire)
 	bool bIsFireAlways = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Fire)
+	bool bIsCanFire = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Fire)
+	float FireCooldownTime = 0.2f;
+
+	UPROPERTY(BlueprintReadWrite, Category = Fire)
+	FTimerHandle TimerHandle_FireCooldown;
+
+	UFUNCTION(BlueprintCallable, Category = Fire)
+	void ComeInCooldownFire();
+
+	void ChangebIsCanFireToTrue();
 
 	UFUNCTION(BlueprintCallable, Category=Weapon)
 	virtual void Fire();
-public:	
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	virtual FVector RayTraceShootingSight();
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	virtual FRotator GetProjectileRotation(FHitResult& Hit, bool& result);
 };
