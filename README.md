@@ -18,6 +18,10 @@ https://www.yuque.com/docs/share/ef8cf45f-f5d9-49ef-8d6d-64566b707eaf?# 《光�
 三.第四次作业-【骨骼动画】的作业项目源码在分支Boneanimation上
 演示视频及其APK：
 
+腾讯微云：
+链接：https://share.weiyun.com/yWyiFY0z 密码：cbe7i2
+
+百度云盘：
 链接：https://pan.baidu.com/s/198vjXt62HokG7nf4xWawmw 
 提取码：Tece
 
