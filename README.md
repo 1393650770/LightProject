@@ -9,6 +9,10 @@ https://www.yuque.com/docs/share/ef8cf45f-f5d9-49ef-8d6d-64566b707eaf?# 《光�
 腾讯微云：
 链接：https://share.weiyun.com/LWzYyOtS 密码：63p43t
 
+百度云盘：
+链接：https://pan.baidu.com/s/1pwc2lkRoebUCKx2Pgv1QdA 
+提取码：Tece
+
 完成了作业所有题目
 
 说明：视频中展示了，脚步脚印以及脚步声，以及拾取枪支，以及射出抛物线子弹，当子弹达到较小速度或者击打到时爆炸，并且能够根据碰撞到不同材质有不同反馈（视频中的灰色、红色、绿色地面分别代表不同的地面），以及波数生成，和未做完的ai
