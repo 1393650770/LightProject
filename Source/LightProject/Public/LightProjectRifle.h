@@ -7,6 +7,7 @@
 #include "LightProjectRifle.generated.h"
 
 class ALightProjectProjectile;
+class FLifetimeProperty;
 /**
  * 
  */
@@ -17,7 +18,7 @@ class LIGHTPROJECT_API ALightProjectRifle : public ALightProjectWeapon
 public:
 	ALightProjectRifle();
 protected:
-
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void Fire() override;
 };

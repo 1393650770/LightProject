@@ -11,6 +11,11 @@ ALightProjectLauncher::ALightProjectLauncher()
 	WeaponType = EWeaponType::Launcher;;
 }
 
+void ALightProjectLauncher::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
 void ALightProjectLauncher::Fire()
 {
 	if (!bIsCanFire)
@@ -29,13 +34,13 @@ void ALightProjectLauncher::Fire()
 			bool HitResult = false;
 			const FVector SpawnLocation =  MeshComp->GetSocketLocation(MuzzleSoketName);
 			const FRotator SpawnRotation = GetProjectileRotation(Hit, HitResult);
-			
+			OwnerPawn->GetOwner();
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 			ActorSpawnParams.Instigator = OwnerPawn;
 			ActorSpawnParams.Owner = this;
 			World->SpawnActor<ALightProjectProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			if (FireSound != nullptr)
+			if (FireSound != nullptr&& bIsCanFire)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 			}

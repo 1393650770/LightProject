@@ -9,9 +9,18 @@ ALightProjectRifle::ALightProjectRifle()
 {
 
 }
+void ALightProjectRifle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void ALightProjectRifle::Fire()
 {
+	if (!bIsCanFire)
+	{
+		return;
+	}
 	Super::Fire();
-	UE_LOG(LogTemp, Log, TEXT("RifleFire"));
+	ComeInCooldownFire();
 	return;
 }

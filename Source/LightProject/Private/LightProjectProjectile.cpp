@@ -14,7 +14,7 @@
 #include <Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h>
 #include "LightProjectWeapon.h"
 #include <Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
-
+#include "LightProjectTeamComponent.h"
 
 
 
@@ -28,8 +28,10 @@ ALightProjectProjectile::ALightProjectProjectile()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-	CollisionComp->OnComponentHit.AddDynamic(this, &ALightProjectProjectile::OnHit);		// set up a notification for when this component hits something blocking
-
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		CollisionComp->OnComponentHit.AddDynamic(this, &ALightProjectProjectile::OnHit);		// set up a notification for when this component hits something blocking
+	}
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
@@ -71,8 +73,6 @@ void ALightProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherA
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
 
-
-
 		if ((Cast<APawn>(OtherActor) || CurrentSpeed <= LeastSpeedLimit) && (OtherActor != this))
 		{
 			UWorld* World = GetWorld();
@@ -102,15 +102,18 @@ void ALightProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherA
 
 					}
 					
-					if (HurtActor && HurtActor->CanBeDamaged())
+					if (HurtActor && HurtActor->CanBeDamaged()&&! ULightProjectTeamComponent::IsFriendlyTeam(HurtActor,GetInstigator()))
 					{
 
 						HurtBaseDamage = (BrokenSphereRadius*1.3f-(BrokenOutComponents[i]->GetComponentLocation() - ProjectileLocation).Size() / BrokenSphereRadius) * BrokenDamage;
-						UGameplayStatics::ApplyPointDamage(HurtActor, HurtBaseDamage, BrokenDirection, Hit,GetOwner()->GetInstigatorController(), this, DamageType);
+						UGameplayStatics::ApplyPointDamage(HurtActor, HurtBaseDamage, BrokenDirection, Hit,GetInstigator()->GetController(), this, DamageType);
 					}
 				}
 			}
-			Broken();
+			if (!ULightProjectTeamComponent::IsFriendlyTeam(HurtActor, GetInstigator()))
+			{
+				Broken();
+			}
 			return;
 		}
 	}
@@ -125,6 +128,7 @@ void ALightProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherA
 
 void ALightProjectProjectile::Broken()
 {
+
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	if (BrokenSound)
 	{

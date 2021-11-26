@@ -46,6 +46,8 @@ class ALightProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -111,7 +113,7 @@ protected:
 /// </summary>
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Player)
 	bool bIsGameOver = false;
 
 	UFUNCTION(BlueprintCallable, Category = Player)
@@ -119,6 +121,9 @@ protected:
 
 	UFUNCTION()
 	void MouseTurn(float Val);
+
+	UFUNCTION()
+	void MouseLookUp(float Val);
 
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeToFreeView();
@@ -130,7 +135,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeToIronSightTick(float DeltaTime);
 
-	UFUNCTION(BlueprintCallable, Category = Player)
+	UFUNCTION(BlueprintCallable,Server,Reliable,Category = Player)
 	void ChangeToIronSight();
 
 	UFUNCTION()
@@ -140,11 +145,22 @@ protected:
 
 	virtual FVector GetPawnViewLocation() const;
 
+	UFUNCTION(Server,Reliable)
+	void MouseTurnRotation();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MouseTurnRoationMuticast();
+
+	UFUNCTION()
+	void OnRepHealthUpdate();
+
+	void OnHealthUpdate();
+
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void CheckGroundObjects();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = Player)
-	void OnCheckGroundObjects(FHitResult Hit,bool& Result);
+	UFUNCTION(BlueprintImplementableEvent ,Category = Player)
+	void OnCheckGroundObjects(FHitResult Hit);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnCheckGroundNoObjects();
@@ -160,6 +176,12 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	float ClientYaw = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	float ClientPitch = 0.0f;
 
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeHealth(float value) ;
@@ -185,21 +207,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Player)
 	bool bIsPlayerSelf = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
+	bool  bIsAuthority = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Player)
 	FName PlayerName = TEXT("Player");
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRepHealthUpdate, Category = Player)
 	float Health = 100.0f;
 	UPROPERTY(EditDefaultsOnly, Category = Player)
 	float MaxHealth = 100.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Player)
 	int32 PlayerTotalDamage = 0;
 
-	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
+	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
 	ALightProjectWeapon* Weapon=nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Player)
 	bool bIsIronsight = false;
 
 	float TargetFOV;
@@ -221,7 +246,7 @@ protected:
 	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
 	float IronsightInterpSpeed = 50.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated,Category = Player)
 	EWeaponType WeaponType = EWeaponType::Fist;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = PlayerDetectObject)
@@ -236,7 +261,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = PlayerDetectObject)
 	TArray<AActor*> DetectObjectActorsToIgnore;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Player)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
 	TArray<FWeaponSlot> WeaponList;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Anim)

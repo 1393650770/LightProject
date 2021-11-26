@@ -13,7 +13,8 @@
 #include "GameFramework/Character.h"
 #include "LightProject/LightProjectCharacter.h"
 #include <Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
-
+#include "LightProjectTeamComponent.h"
+#include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 
 // Sets default values
 ALightProjectWeapon::ALightProjectWeapon()
@@ -22,6 +23,19 @@ ALightProjectWeapon::ALightProjectWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	RootComponent = MeshComp;
+}
+
+
+void ALightProjectWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = ELifetimeCondition::COND_None;
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, bIsCanFire, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, bIsFireAlways, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, TimerHandle_FireCooldown, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, WeaponMaster, SharedParams);
+
 }
 
 void ALightProjectWeapon::ComeInCooldownFire()
@@ -44,14 +58,14 @@ void ALightProjectWeapon::Fire()
 	{
 		return;
 	}
-	if (FireSound != nullptr)
+	if (FireSound != nullptr && bIsCanFire)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 	AActor* const MyOwner = GetOwner();
 	UWorld* const World = GetWorld();
-	APawn* const MyPawn = UGameplayStatics::GetPlayerPawn(this, 0);
-	ALightProjectCharacter* PlayerCharacter= Cast<ALightProjectCharacter>(UGameplayStatics::GetPlayerCharacter(World, 0));
+	APawn* const MyPawn = Cast<APawn>(MyOwner);
+	ALightProjectCharacter* PlayerCharacter= Cast<ALightProjectCharacter>(MyOwner);
 	if (MyOwner->GetVelocity().Size() > 1.0f && PlayerCharacter->bIsCrouched)
 	{
 		return;	
@@ -66,8 +80,11 @@ void ALightProjectWeapon::Fire()
 		FVector EyeLocation;
 		FRotator EyeRotation;
 		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
+		
 		FVector ShootDirection = EyeRotation.Vector();
+
+		float HalfRad = FMath::DegreesToRadians(BulletSpread);
+		ShootDirection=FMath::VRandCone(ShootDirection, HalfRad, HalfRad);
 		FVector TraceEnd = EyeLocation + ShootDirection * 10000.0f;
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(MyOwner);
@@ -84,13 +101,14 @@ void ALightProjectWeapon::Fire()
 		if (World->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams))
 		{
 			AActor* HitActor = Hit.GetActor();
-
-			float HitBaseDamage = rand() % (int)Attack + 1;
-
-			EPhysicalSurface HitSurfaceType= UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
-
-			switch (HitSurfaceType)
+			if (HitActor->CanBeDamaged())
 			{
+				float HitBaseDamage = rand() % (int)Attack + 1;
+
+				EPhysicalSurface HitSurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+				switch (HitSurfaceType)
+				{
 				case SurfaceType_Default:
 					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=SurfaceType_Default"));
 					break;
@@ -104,50 +122,30 @@ void ALightProjectWeapon::Fire()
 					break;
 				case SurfaceType3://SurfaceType3=ActorFoot
 					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorFoot"));
-					HitBaseDamage = rand() % ((int)Attack/2) + 1;
+					HitBaseDamage = rand() % ((int)Attack / 2) + 1;
 					break;
 				case SurfaceType4://SurfaceType4=ActorHand
 					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorHand"));
-					HitBaseDamage = rand() % ((int)Attack/2) + 1;
+					HitBaseDamage = rand() % ((int)Attack / 2) + 1;
 					break;
 				default:
 					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=Error"));
 					break;
-			}
-			if (ExplosionEffect)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(World, ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-			}
+				}
 
+
+				PlayExplosionEffectServer(Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+
+				if (!ULightProjectTeamComponent::IsFriendlyTeam(HitActor, MyOwner))
+				{
+					UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, ShootDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+				}
+				TraceEndPoint = Hit.ImpactPoint;
+			}
 			
-			UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, ShootDirection,Hit,MyOwner->GetInstigatorController(),this, DamageType);
-
-			TraceEndPoint = Hit.ImpactPoint;
 		}
 
-		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSoketName);
-
-		if (FireEffect)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(World, FireEffect, MuzzleLocation);
-		}
-
-		if (TraceEmitter)
-		{
-			UParticleSystemComponent* ParticleSystemComponent= UGameplayStatics::SpawnEmitterAtLocation(World, TraceEmitter, MuzzleLocation);
-			if (ParticleSystemComponent)
-			{
-				ParticleSystemComponent->SetVectorParameter(TraceTargetName, TraceEndPoint);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Log, TEXT("Don't Get ParticleSystemComponent"));
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("Don't Get TraceEmitter"));
-		}
+		PlayFireAndTraceEffectServer(TraceEndPoint);
 		ComeInCooldownFire();
 	}
 }
@@ -203,4 +201,53 @@ FRotator ALightProjectWeapon::GetProjectileRotation(FHitResult& Hit,bool& result
 
 	FinalRotator = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TraceEnd);
 	return FinalRotator;
+}
+
+void ALightProjectWeapon::PlayExplosionEffectServer_Implementation(FVector Positon, FRotator Rotation)
+{
+	PlayExplosionEffectMulticast(Positon, Rotation);
+}
+
+void ALightProjectWeapon::PlayExplosionEffectMulticast_Implementation(FVector Positon, FRotator Rotation)
+{
+	UWorld* const World = GetWorld();
+
+	if (ExplosionEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(World, ExplosionEffect, Positon, Rotation);
+	}
+
+}
+
+void ALightProjectWeapon::PlayFireAndTraceEffectServer_Implementation(FVector Positon)
+{
+	PlayFireAndTraceEffectMulticast(Positon);
+}
+
+void ALightProjectWeapon::PlayFireAndTraceEffectMulticast_Implementation(FVector Positon)
+{
+	
+	UWorld* const World = GetWorld();
+	FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSoketName);
+	if (FireEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(World, FireEffect, MuzzleLocation);
+	}
+
+	if (TraceEmitter)
+	{
+		UParticleSystemComponent* ParticleSystemComponent = UGameplayStatics::SpawnEmitterAtLocation(World, TraceEmitter, MuzzleLocation);
+		if (ParticleSystemComponent)
+		{
+			ParticleSystemComponent->SetVectorParameter(TraceTargetName, Positon);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("Don't Get ParticleSystemComponent"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Don't Get TraceEmitter"));
+	}
 }

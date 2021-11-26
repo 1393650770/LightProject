@@ -7,6 +7,8 @@
 #include "GameFramework/Controller.h"
 #include "LightProject/LightProjectCharacter.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "LightProjectTeamComponent.h"
+
 void UAttackTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
 	Player = MeshComp->GetOwner();
@@ -47,7 +49,10 @@ void UAttackTracer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 					{
 						HitActors.Add(HitActor);
 						HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
-						UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], EventInstigator, Player, DamageTypeClass);
+						if (!ULightProjectTeamComponent::IsFriendlyTeam(HitActor, Player))
+						{
+							UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], MyCharacter->GetController(), Player, DamageTypeClass);
+						}
 					}
 				}
 			}
@@ -69,7 +74,10 @@ void UAttackTracer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 					{
 						HitActors.Add(HitActor);
 						HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
-						UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], EventInstigator, Player, DamageTypeClass);
+						if (!ULightProjectTeamComponent::IsFriendlyTeam(HitActor, Player))
+						{
+							UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], MyCharacter->GetController(), Player, DamageTypeClass);
+						}
 						//UGameplayStatics::ApplyDamage(HitActor, 20.f, EventInstigator, Player, DamageTypeClass);
 					}
 				}

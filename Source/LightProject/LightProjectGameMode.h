@@ -29,6 +29,12 @@ public:
 
 	virtual void StartPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
+	void EventStartPlay();
+
+	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
+	FTimerHandle TimerHandle_FirstWaveStart;
+
 	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
 	FTimerHandle TimerHandle_NextWaveStart;
 
@@ -36,24 +42,33 @@ public:
 	FTimerHandle TimerHandle_BotSpawner;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
-	int32 NumsOfBotsToSpawn=0;
+	int32 NumsOfBotsToSpawn=10;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
+	int32 BasrAddNumsOfBotsToSpawn = 10;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
+	int32 MaxWaveCount = 5;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
 	int32 WaveCount=0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
-	float TimeBetweenWaves = 2.0f;
+	float WaveIntervalTime = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
+	float FirstWaveIntervalTime = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIBot")
+	float TimeBetweenSPawnAI = 2.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "AIBot")
 	bool bIsAlwaysStopWave = false;
-		
-	void PlayerOver(APawn* InstigatorPawn);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
-	void OnMissionCompleted(APawn* InstigatorPawn);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void SpawnNewBot();
+
+
 
 	void StartWave();
 
@@ -62,9 +77,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameMode")
 	void AlwaysEndWave();
 
+	void FirstWave();
+
 	void PrepareNextWave();
 
 	void SpawnBotTimerElapsed();
+
+
+
 
 };
 

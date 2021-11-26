@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LightProjectGameMode.h"
+#include "Net/UnrealNetwork.h"
 #include "LightProjectCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include <Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h>
@@ -21,32 +22,28 @@ ALightProjectGameMode::ALightProjectGameMode()
 void ALightProjectGameMode::StartPlay()
 {
 	Super::StartPlay();
-	PrepareNextWave();
+	FirstWave();
 }
 
-void ALightProjectGameMode::PlayerOver(APawn* InstigatorPawn)
-{
-	if (InstigatorPawn)
-	{
-		InstigatorPawn->DisableInput(nullptr);		
 
-	}
-	OnMissionCompleted(InstigatorPawn);
-}
 
 void ALightProjectGameMode::StartWave()
 {
 	WaveCount++;
-	NumsOfBotsToSpawn = 2 * WaveCount;
+	NumsOfBotsToSpawn += 2 * WaveCount;
 
-	GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ALightProjectGameMode::SpawnBotTimerElapsed, 5.0f, true, 0.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ALightProjectGameMode::SpawnBotTimerElapsed, TimeBetweenSPawnAI, true, 0.0f);
 }
 
 void ALightProjectGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
 
-	PrepareNextWave();
+	WaveCount++;
+	if (WaveCount < MaxWaveCount)
+	{
+		PrepareNextWave();
+	}
 }
 
 void ALightProjectGameMode::AlwaysEndWave()
@@ -55,9 +52,20 @@ void ALightProjectGameMode::AlwaysEndWave()
 	GetWorldTimerManager().ClearTimer(TimerHandle_NextWaveStart);
 }
 
+void ALightProjectGameMode::FirstWave()
+{
+	if (WaveCount < MaxWaveCount)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_FirstWaveStart, this, &ALightProjectGameMode::StartWave, FirstWaveIntervalTime, false);;
+	}
+}
+
 void ALightProjectGameMode::PrepareNextWave()
 {
-	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ALightProjectGameMode::StartWave, 5.0f, false);;
+	if (WaveCount < MaxWaveCount)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ALightProjectGameMode::StartWave, WaveIntervalTime, false);;
+	}
 }
 
 void ALightProjectGameMode::SpawnBotTimerElapsed()

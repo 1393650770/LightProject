@@ -7,7 +7,7 @@
 #include "LightProjectLauncher.generated.h"
 
 class ALightProjectProjectile;
-
+class FLifetimeProperty;
 /**
  * 
  */
@@ -19,6 +19,9 @@ public:
 	ALightProjectLauncher();
 
 protected:
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<ALightProjectProjectile> ProjectileClass;
 

@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LightProjectCharacter.h"
+#include "Net/UnrealNetwork.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -18,6 +19,7 @@
 #include "LightProject/LightProjectGameMode.h"
 #include <LightProject//Public/LightProjectRifle.h>
 #include <LightProject//Public/LightProjectLauncher.h>
+#include <LightProject//Public/LightProjectPlayerController.h>
 //////////////////////////////////////////////////////////////////////////
 // ALightProjectCharacter
 
@@ -65,6 +67,22 @@ ALightProjectCharacter::ALightProjectCharacter()
 }
 
 
+void ALightProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = ELifetimeCondition::COND_None;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, Health, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, PlayerTotalDamage, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, Weapon, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, bIsIronsight, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, bIsGameOver, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, WeaponType, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, WeaponList, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, bIsAuthority, SharedParams);
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -109,20 +127,16 @@ void ALightProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 void ALightProjectCharacter::MouseTurn(float Val)
 {
 
+		ClientYaw += Val;
 		APawn::AddControllerYawInput(Val);
-		FRotator ControlRotation = GetControlRotation();
-		FRotator ActorRotation = GetActorRotation();
-		if (!bIsFreeView)
-		{
-			if (abs(ControlRotation.Yaw - ActorRotation.Yaw) > 89.0f)
-			{
-				SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 5.0f));
-			}
-			if (ACharacter::bIsCrouched)
-			{
-				SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 10.0f));
-			}
-		}
+		MouseTurnRotation();
+}
+void ALightProjectCharacter::MouseLookUp(float Val)
+{
+
+	ClientPitch += Val;
+	APawn::AddControllerPitchInput(Val);
+
 }
 
 void ALightProjectCharacter::ChangeToFreeView()
@@ -166,7 +180,7 @@ void ALightProjectCharacter::ChangeLeaveFreeViewTick(float DeltaTime)
 
 
 
-void ALightProjectCharacter::ChangeToIronSight()
+void ALightProjectCharacter::ChangeToIronSight_Implementation()
 {
 	if (!bIsIronsight)
 	{
@@ -221,35 +235,26 @@ void ALightProjectCharacter::CreateDefaultShootWeapon()
 
 void ALightProjectCharacter::ChangeHealth(float value)
 {
-	if (!bIsGameOver)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		if(value<0)
-			Health = FMath::Clamp(Health + value, 0.0f, MaxHealth);
-		else
+		if (!bIsGameOver)
 		{
-			Health = FMath::Clamp(Health - value, 0.0f, MaxHealth);
-		}
-		if (Health < 0.01f)
-		{
-			StopAnimMontage(GetCurrentMontage());
-			for (int i = 0; i < AnimMontageArray.Num(); i++)
+			
+			if (value < 0)
+				Health = FMath::Clamp(Health + value, 0.0f, MaxHealth);
+			else
 			{
-				if (AnimMontageArray[i])
-				{
-					StopAnimMontage(AnimMontageArray[i]);
-				}
+				Health = FMath::Clamp(Health - value, 0.0f, MaxHealth);
 			}
-			OnChangerCharacterHealth();
-			if (bIsPlayerSelf)
+			OnHealthUpdate();
+			if (Health < 0.01f)
 			{
-				ALightProjectGameMode* GameMode = Cast<ALightProjectGameMode>(GetWorld()->GetAuthGameMode());
-				if (GameMode)
+				StopAnimMontage(GetCurrentMontage());
+				for (int i = 0; i < AnimMontageArray.Num(); i++)
 				{
-
-					if (bIsPlayerSelf)
+					if (AnimMontageArray[i])
 					{
-
-						GameMode->PlayerOver(UGameplayStatics::GetPlayerPawn(this, 0));
+						StopAnimMontage(AnimMontageArray[i]);
 					}
 				}
 			}
@@ -259,11 +264,14 @@ void ALightProjectCharacter::ChangeHealth(float value)
 
 void ALightProjectCharacter::ChangePlayerTotalDamage(int value)
 {
-	if(value>0)
-		PlayerTotalDamage += value;
-	else
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		PlayerTotalDamage -= value;
+		if (value > 0)
+			PlayerTotalDamage += value;
+		else
+		{
+			PlayerTotalDamage -= value;
+		}
 	}
 }
 
@@ -329,6 +337,84 @@ FVector ALightProjectCharacter::GetPawnViewLocation() const
 	return FVector();
 }
 
+
+
+void ALightProjectCharacter::MouseTurnRotation_Implementation()
+{
+	MouseTurnRoationMuticast();
+}
+
+void ALightProjectCharacter::MouseTurnRoationMuticast_Implementation()
+{
+	if (!bIsFreeView)
+	{
+
+		FRotator ControlRotation = GetControlRotation();
+		FRotator ActorRotation = GetActorRotation();
+		if (abs(ControlRotation.Yaw - ActorRotation.Yaw) > 89.0f)
+		{
+			SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 5.0f));
+		}
+		if (ACharacter::bIsCrouched)
+		{
+			SetActorRotation(UKismetMathLibrary::RInterpTo(FRotator(0, ActorRotation.Yaw, 0), FRotator(0, ControlRotation.Yaw, 0), 0.01f, 10.0f));
+		}
+	}
+}
+
+void ALightProjectCharacter::OnRepHealthUpdate()
+{
+
+	if (Health < 0.1f)
+	{
+		StopAnimMontage(GetCurrentMontage());
+		for (int i = 0; i < AnimMontageArray.Num(); i++)
+		{
+			if (AnimMontageArray[i])
+			{
+				StopAnimMontage(AnimMontageArray[i]);
+			}
+		}
+		OnChangerCharacterHealth();
+		if (bIsPlayerSelf)
+		{
+			APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+			DisableInput(playerController);
+			ALightProjectPlayerController* lightProjectPlayerController = Cast<ALightProjectPlayerController>(playerController);
+			if (lightProjectPlayerController)
+			{
+				UE_LOG(LogTemp, Log, TEXT("OnRepHealthUpdatee=PlayerDeath"));
+				lightProjectPlayerController->OnPlayerIsDeath();
+			}
+		}
+	}
+	
+}
+
+void ALightProjectCharacter::OnHealthUpdate()
+{
+	//客户端特定的功能
+	if (IsLocallyControlled())
+	{
+		
+
+
+	}
+
+	//服务器特定的功能
+	if (GetLocalRole() == ROLE_Authority)
+	{
+
+		OnRepHealthUpdate();
+		
+	}
+
+	//在所有机器上都执行的函数。 
+	/*
+		因任何因伤害或死亡而产生的特殊功能都应放在这里。
+	*/
+}
+
 void ALightProjectCharacter::CheckGroundObjects()
 {
 	FVector EyeLocation;
@@ -351,7 +437,7 @@ void ALightProjectCharacter::CheckGroundObjects()
 		bool Result = false;
 		for (int8 i = 0; i < HitInfoSize; i++)
 		{
-			OnCheckGroundObjects(HitInfo[i], Result);
+			OnCheckGroundObjects(HitInfo[i]);
 			if(Result)
 			{
 				break;
