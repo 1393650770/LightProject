@@ -23,6 +23,7 @@ void ALightProjectGameMode::StartPlay()
 {
 	Super::StartPlay();
 	FirstWave();
+	EventStartPlay();
 }
 
 
@@ -39,11 +40,13 @@ void ALightProjectGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
 
-	WaveCount++;
+
 	if (WaveCount < MaxWaveCount)
-	{
+	{	
+		WaveCount++;
 		PrepareNextWave();
 	}
+
 }
 
 void ALightProjectGameMode::AlwaysEndWave()
