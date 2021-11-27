@@ -17,7 +17,7 @@ enum class EGameState :uint8
 	GameOver,
 };
 
-
+class ALightProjectCharacter;
 
 UCLASS(minimalapi)
 class ALightProjectGameMode : public AGameModeBase
@@ -31,6 +31,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void EventStartPlay();
+
+	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
+	TArray<ALightProjectCharacter*> SpawnBotArray;
 
 	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
 	FTimerHandle TimerHandle_FirstWaveStart;
@@ -64,6 +67,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "AIBot")
 	bool bIsAlwaysStopWave = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
+	bool bIsGameOver = false;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void SpawnNewBot();

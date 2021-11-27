@@ -272,6 +272,7 @@ void ALightProjectCharacter::ChangePlayerTotalDamage(int value)
 		{
 			PlayerTotalDamage -= value;
 		}
+		ChangePlayerTotalDamageBluePrint(value);
 	}
 }
 

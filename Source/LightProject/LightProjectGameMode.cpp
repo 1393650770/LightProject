@@ -30,7 +30,7 @@ void ALightProjectGameMode::StartPlay()
 
 void ALightProjectGameMode::StartWave()
 {
-	WaveCount++;
+	
 	NumsOfBotsToSpawn += 2 * WaveCount;
 
 	GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ALightProjectGameMode::SpawnBotTimerElapsed, TimeBetweenSPawnAI, true, 0.0f);
@@ -60,6 +60,7 @@ void ALightProjectGameMode::FirstWave()
 	if (WaveCount < MaxWaveCount)
 	{
 		GetWorldTimerManager().SetTimer(TimerHandle_FirstWaveStart, this, &ALightProjectGameMode::StartWave, FirstWaveIntervalTime, false);;
+		WaveCount++;
 	}
 }
 
