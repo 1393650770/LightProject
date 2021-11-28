@@ -378,7 +378,7 @@ void ALightProjectCharacter::OnRepHealthUpdate()
 		OnChangerCharacterHealth();
 		if (bIsPlayerSelf)
 		{
-			PlayerDeathBluePrint();
+			
 		}
 	}
 	
@@ -397,9 +397,18 @@ void ALightProjectCharacter::OnHealthUpdate()
 	//服务器特定的功能
 	if (GetLocalRole() == ROLE_Authority)
 	{
-
-		OnRepHealthUpdate();
-		
+		if (bIsPlayerSelf)
+		{
+			if (Health < 0.1f)
+			{
+				ALightProjectGameMode* MyGameMode = Cast<ALightProjectGameMode>(UGameplayStatics::GetGameMode(this));
+				if (MyGameMode)
+				{
+					APlayerController* PlayerController= Cast<APlayerController>(GetController());
+					MyGameMode->RespawnPlayerBluePrint(PlayerController);
+				}
+			}
+		}
 	}
 
 	//在所有机器上都执行的函数。 

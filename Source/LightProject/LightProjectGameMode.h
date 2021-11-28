@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void SpawnNewBot();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
+	void RespawnPlayerBluePrint(APlayerController* playercontroller);
+
 	void StartWave();
 
 	void EndWave();
