@@ -19,7 +19,6 @@
 #include "LightProject/LightProjectGameMode.h"
 #include <LightProject//Public/LightProjectRifle.h>
 #include <LightProject//Public/LightProjectLauncher.h>
-#include <LightProject//Public/LightProjectPlayerController.h>
 //////////////////////////////////////////////////////////////////////////
 // ALightProjectCharacter
 
@@ -379,14 +378,7 @@ void ALightProjectCharacter::OnRepHealthUpdate()
 		OnChangerCharacterHealth();
 		if (bIsPlayerSelf)
 		{
-			APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-			DisableInput(playerController);
-			ALightProjectPlayerController* lightProjectPlayerController = Cast<ALightProjectPlayerController>(playerController);
-			if (lightProjectPlayerController)
-			{
-				UE_LOG(LogTemp, Log, TEXT("OnRepHealthUpdatee=PlayerDeath"));
-				lightProjectPlayerController->OnPlayerIsDeath();
-			}
+			PlayerDeathBluePrint();
 		}
 	}
 	

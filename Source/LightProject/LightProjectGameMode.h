@@ -7,17 +7,8 @@
 #include "LightProjectGameMode.generated.h"
 
 
-UENUM(BlueprintType)
-enum class EGameState :uint8
-{
-	Start,
-	MainMenu,
-	SinglePlay,
-	MultyPlay,
-	GameOver,
-};
-
 class ALightProjectCharacter;
+
 
 UCLASS(minimalapi)
 class ALightProjectGameMode : public AGameModeBase
@@ -29,11 +20,9 @@ public:
 
 	virtual void StartPlay() override;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
-	void EventStartPlay();
 
 	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
-	TArray<ALightProjectCharacter*> SpawnBotArray;
+	bool bIsGameOver = false;
 
 	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
 	FTimerHandle TimerHandle_FirstWaveStart;
@@ -68,14 +57,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "AIBot")
 	bool bIsAlwaysStopWave = false;
 
-	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
-	bool bIsGameOver = false;
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void SpawnNewBot();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
-	void FinishGame();
 
 	void StartWave();
 
@@ -89,8 +72,6 @@ public:
 	void PrepareNextWave();
 
 	void SpawnBotTimerElapsed();
-
-
 
 
 };

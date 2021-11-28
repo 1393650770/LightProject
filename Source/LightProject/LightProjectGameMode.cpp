@@ -23,7 +23,6 @@ void ALightProjectGameMode::StartPlay()
 {
 	Super::StartPlay();
 	FirstWave();
-	EventStartPlay();
 }
 
 

@@ -168,6 +168,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnChangerCharacterHealth();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = Player)
+	void PlayerDeathBluePrint();
+
 /// <summary>
 /// 自定义的public方法/属性
 /// </summary>
