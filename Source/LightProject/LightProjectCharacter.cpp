@@ -80,6 +80,8 @@ void ALightProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, WeaponType, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, WeaponList, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, bIsAuthority, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectCharacter, TimerHandle_ReSpawnerPlayer, SharedParams);
+
 }
 
 
@@ -376,10 +378,7 @@ void ALightProjectCharacter::OnRepHealthUpdate()
 			}
 		}
 		OnChangerCharacterHealth();
-		if (bIsPlayerSelf)
-		{
-			
-		}
+
 	}
 	
 }
@@ -401,12 +400,9 @@ void ALightProjectCharacter::OnHealthUpdate()
 		{
 			if (Health < 0.1f)
 			{
-				ALightProjectGameMode* MyGameMode = Cast<ALightProjectGameMode>(UGameplayStatics::GetGameMode(this));
-				if (MyGameMode)
-				{
-					APlayerController* PlayerController= Cast<APlayerController>(GetController());
-					MyGameMode->RespawnPlayerBluePrint(PlayerController);
-				}
+
+				GetWorldTimerManager().SetTimer(TimerHandle_ReSpawnerPlayer, this, &ALightProjectCharacter::CallGameModeRespawnPlayer, 5.0f, false , 0.0f);
+				
 			}
 		}
 	}
@@ -449,6 +445,19 @@ void ALightProjectCharacter::CheckGroundObjects()
 	else
 	{
 		OnCheckGroundNoObjects();
+	}
+}
+
+void ALightProjectCharacter::CallGameModeRespawnPlayer_Implementation()
+{
+	if (bIsPlayerSelf)
+	{
+		ALightProjectGameMode* MyGameMode = Cast<ALightProjectGameMode>(UGameplayStatics::GetGameMode(this));
+		if (MyGameMode)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			MyGameMode->RespawnPlayerBluePrint(PlayerController);
+		}
 	}
 }
 

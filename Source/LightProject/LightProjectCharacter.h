@@ -169,6 +169,10 @@ protected:
 	void OnChangerCharacterHealth();
 
 
+	UFUNCTION(Server,Reliable)
+	void CallGameModeRespawnPlayer();
+
+
 /// <summary>
 /// 自定义的public方法/属性
 /// </summary>
@@ -240,6 +244,8 @@ protected:
 
 	FRotator FreeViewRotation;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Player)
+	FTimerHandle TimerHandle_ReSpawnerPlayer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	float DefaultFOV =50.0f;
