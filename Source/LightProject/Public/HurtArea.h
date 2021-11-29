@@ -28,7 +28,9 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = "FireArea")
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "FireArea")
 	int CurrentInAreaPeople=0;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -37,12 +39,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Player)
 	UParticleSystem* FireEffect;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Player)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Player)
 	float HurtPlayerDelayTime=0.5f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Player)
 	TSubclassOf<UDamageType> DamageTypeClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Player)
 	FTimerHandle TimerHandle_Hurt;
 
 	EPlayerState PlayerState = EPlayerState::Normal;
@@ -57,7 +60,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnStateChanged(EPlayerState NewState);
 
-
+	UFUNCTION(Server,Reliable)
 	void HurtPlayer(ALightProjectCharacter* MyPawn);
 
 public:	

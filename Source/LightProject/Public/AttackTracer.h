@@ -19,6 +19,7 @@ protected:
 
 	ALightProjectCharacter* MyCharacter=nullptr;
 public:
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 
 	FCollisionQueryParams QueryParams;
@@ -43,8 +44,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AttackTrace)
 	FName RightSocketName = TEXT("HandSocketRight");
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	class AActor* Player;//当前玩家//
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	class USkeletalMeshComponent* Weapon;//玩家武器//
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AttackTrace)

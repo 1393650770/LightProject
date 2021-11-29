@@ -8,6 +8,8 @@
 #include "LightProject/LightProjectCharacter.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "LightProjectTeamComponent.h"
+#include "Net/UnrealNetwork.h"
+
 
 void UAttackTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
@@ -23,6 +25,15 @@ void UAttackTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	}
 }
 
+
+void UAttackTracer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = ELifetimeCondition::COND_None;
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttackTracer, Weapon, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttackTracer, Player, SharedParams);
+}
 
 void UAttackTracer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {

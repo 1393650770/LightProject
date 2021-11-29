@@ -16,10 +16,11 @@ public:
 	// Sets default values for this component's properties
 	ULightProjectTeamComponent();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = TeamComponent)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = TeamComponent)
 	uint8 TeamNum=255;
 
 protected:
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	// Called when the game starts
 	virtual void BeginPlay() override;
 

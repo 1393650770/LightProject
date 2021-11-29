@@ -14,6 +14,19 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Net/UnrealNetwork.h"
+
+
+void UFootPrintTracer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = ELifetimeCondition::COND_None;
+	DOREPLIFETIME_WITH_PARAMS_FAST(UFootPrintTracer, MyCharacter, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UFootPrintTracer, bIsPlaySound, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UFootPrintTracer, FootPrintLifeSpan, SharedParams);
+
+}
 
 void UFootPrintTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {

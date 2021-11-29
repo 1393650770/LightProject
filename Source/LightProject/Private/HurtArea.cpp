@@ -8,6 +8,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Net/UnrealNetwork.h"
 // Sets default values
 AHurtArea::AHurtArea()
 {
@@ -20,6 +21,18 @@ AHurtArea::AHurtArea()
 	OverlapComp->SetHiddenInGame(false);
 	OverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AHurtArea::HandleOverlapStart);
 	OverlapComp->OnComponentEndOverlap.AddDynamic(this, &AHurtArea::HandleOverlapEnd);
+}
+
+
+void AHurtArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = ELifetimeCondition::COND_None;
+	DOREPLIFETIME_WITH_PARAMS_FAST(AHurtArea, CurrentInAreaPeople, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(AHurtArea, HurtPlayerDelayTime, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(AHurtArea, TimerHandle_Hurt, SharedParams);
+
 }
 
 void AHurtArea::HandleOverlapStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -64,7 +77,7 @@ void AHurtArea::SetPlayerState(EPlayerState NewState)
 }
 
 
-void AHurtArea::HurtPlayer(ALightProjectCharacter* MyPawn)
+void AHurtArea::HurtPlayer_Implementation(ALightProjectCharacter* MyPawn)
 {
 	float hurtNum = -(rand() % 5+1);
 	if (MyPawn->GetHealthToFloat() >= 0.01f)

@@ -21,9 +21,12 @@ class LIGHTPROJECT_API UFootPrintTracer : public UAnimNotifyState
 
 public:
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
+	UPROPERTY( BlueprintReadOnly, Replicated, Category = Player)
 	ALightProjectCharacter* MyCharacter=nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Sound)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Sound)
 	bool bIsPlaySound=false	;//
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
@@ -38,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FootMatertial)
 	FRotator FootPrintRotation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FootMatertial)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = FootMatertial)
 	float FootPrintLifeSpan = 5.0f;
 
 	TArray<FHitResult>HitResult;//保存命中结果//

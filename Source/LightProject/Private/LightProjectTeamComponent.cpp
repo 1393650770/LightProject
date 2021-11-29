@@ -3,7 +3,7 @@
 
 #include "LightProjectTeamComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 ULightProjectTeamComponent::ULightProjectTeamComponent()
@@ -15,6 +15,14 @@ ULightProjectTeamComponent::ULightProjectTeamComponent()
 	// ...
 }
 
+
+void ULightProjectTeamComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = ELifetimeCondition::COND_None;
+	DOREPLIFETIME_WITH_PARAMS_FAST(ULightProjectTeamComponent, TeamNum, SharedParams);
+}
 
 // Called when the game starts
 void ULightProjectTeamComponent::BeginPlay()
