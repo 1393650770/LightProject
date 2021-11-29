@@ -401,8 +401,8 @@ void ALightProjectCharacter::OnHealthUpdate()
 		{
 			if (Health < 0.01f)
 			{
-				//GetWorldTimerManager().ClearTimer(TimerHandle_ReSpawnerPlayer);
-				//GetWorldTimerManager().SetTimer(TimerHandle_ReSpawnerPlayer, this, &ALightProjectCharacter::CallGameModeRespawnPlayerClient, 5.0f, false);
+				GetWorldTimerManager().ClearTimer(TimerHandle_ReSpawnerPlayer);
+				GetWorldTimerManager().SetTimer(TimerHandle_ReSpawnerPlayer, this, &ALightProjectCharacter::CallGameModeRespawnPlayerClient, 5.0f, false);
 				
 			}
 		}
