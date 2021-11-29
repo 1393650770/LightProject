@@ -169,6 +169,8 @@ protected:
 	void OnChangerCharacterHealth();
 
 
+	void CallGameModeRespawnPlayerClient();
+
 	UFUNCTION(Server,Reliable)
 	void CallGameModeRespawnPlayer();
 
@@ -212,7 +214,7 @@ public:
 /// 自定义的protected属性
 /// </summary>
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Player)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Player)
 	bool bIsPlayerSelf = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
