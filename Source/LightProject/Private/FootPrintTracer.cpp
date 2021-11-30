@@ -22,7 +22,6 @@ void UFootPrintTracer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.Condition = ELifetimeCondition::COND_None;
-	DOREPLIFETIME_WITH_PARAMS_FAST(UFootPrintTracer, MyCharacter, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UFootPrintTracer, bIsPlaySound, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UFootPrintTracer, FootPrintLifeSpan, SharedParams);
 
@@ -33,7 +32,8 @@ void UFootPrintTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequen
 	Player = MeshComp->GetOwner();
 	if (Player)
 	{
-		MyCharacter = Cast<ALightProjectCharacter>(Player);
+		ALightProjectCharacter* MyCharacter = Cast<ALightProjectCharacter>(Player);
+
 		if (MyCharacter)
 		{
 			LastLocation1 = MeshComp->GetSocketLocation(LeftFootSocketName);
@@ -46,6 +46,8 @@ void UFootPrintTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequen
 
 void UFootPrintTracer::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
+	ALightProjectCharacter* MyCharacter = Cast<ALightProjectCharacter>(Player);
+
 	if (Player&& MyCharacter&&MyCharacter->GetbIsPlayerSelf())
 	{
 		UWorld* World = Player->GetWorld();

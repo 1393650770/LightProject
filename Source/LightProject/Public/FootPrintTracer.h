@@ -23,8 +23,6 @@ public:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-	UPROPERTY( BlueprintReadOnly, Replicated, Category = Player)
-	ALightProjectCharacter* MyCharacter=nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Sound)
 	bool bIsPlaySound=false	;//

@@ -16,7 +16,7 @@ void UAttackTracer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	Player = MeshComp->GetOwner();
 	if (Player)
 	{
-		MyCharacter = Cast<ALightProjectCharacter>(Player);
+		ALightProjectCharacter* MyCharacter = Cast<ALightProjectCharacter>(Player);
 		if (MyCharacter)
 		{
 			LastLocation1= MeshComp->GetSocketLocation(LeftSocketName);
@@ -31,14 +31,14 @@ void UAttackTracer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.Condition = ELifetimeCondition::COND_None;
-	DOREPLIFETIME_WITH_PARAMS_FAST(UAttackTracer, Weapon, SharedParams);
-	DOREPLIFETIME_WITH_PARAMS_FAST(UAttackTracer, Player, SharedParams);
+
 }
 
 void UAttackTracer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
 
-	
+	ALightProjectCharacter* MyCharacter = Cast<ALightProjectCharacter>(Player);
+
 	if (Player)
 	{
 		float HitBaseDamage = rand() % 20 + 1;
