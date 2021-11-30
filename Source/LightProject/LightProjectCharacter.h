@@ -194,6 +194,9 @@ public:
 	void ChangeHealth(float value) ;
 
 	UFUNCTION(BlueprintCallable, Category = Player)
+	void AddHealth(float value);
+
+	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangePlayerTotalDamage(int value);
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)

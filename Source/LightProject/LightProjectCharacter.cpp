@@ -264,6 +264,22 @@ void ALightProjectCharacter::ChangeHealth(float value)
 	}
 }
 
+void ALightProjectCharacter::AddHealth(float value)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		if (!bIsGameOver)
+		{
+			
+			if (Health > 0.01f)
+			{
+				Health = FMath::Clamp(Health + FMath::Abs(value), 0.0f, MaxHealth);
+				OnHealthUpdate();
+			}
+		}
+	}
+}
+
 void ALightProjectCharacter::ChangePlayerTotalDamage(int value)
 {
 	if (GetLocalRole() == ROLE_Authority)
