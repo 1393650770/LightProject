@@ -28,6 +28,9 @@ public:
 	FTimerHandle TimerHandle_FirstWaveStart;
 
 	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
+	FTimerHandle TimerHandle_FirstWaveStartBluePrintEvent;
+
+	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
 	FTimerHandle TimerHandle_NextWaveStart;
 
 	UPROPERTY(BlueprintReadWrite, Category = "AIBot")
@@ -58,6 +61,9 @@ public:
 	bool bIsAlwaysStopWave = false;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
+	void FirstWaveStartBlurPrint();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void SpawnNewBot();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
@@ -76,6 +82,7 @@ public:
 
 	void SpawnBotTimerElapsed();
 
+	void FirstWaveStartOnCall();
 
 };
 

@@ -58,8 +58,9 @@ void ALightProjectGameMode::FirstWave()
 {
 	if (WaveCount < MaxWaveCount)
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle_FirstWaveStart, this, &ALightProjectGameMode::StartWave, FirstWaveIntervalTime, false);;
+		GetWorldTimerManager().SetTimer(TimerHandle_FirstWaveStart, this, &ALightProjectGameMode::StartWave, FirstWaveIntervalTime, false);
 		WaveCount++;
+		GetWorldTimerManager().SetTimer(TimerHandle_FirstWaveStartBluePrintEvent, this, &ALightProjectGameMode::FirstWaveStartOnCall, FirstWaveIntervalTime, false);
 	}
 }
 
@@ -80,4 +81,9 @@ void ALightProjectGameMode::SpawnBotTimerElapsed()
 	{
 		EndWave();
 	}
+}
+
+void ALightProjectGameMode::FirstWaveStartOnCall()
+{
+	FirstWaveStartBlurPrint();
 }
