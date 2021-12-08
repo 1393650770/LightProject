@@ -87,6 +87,7 @@ void UAttackTracer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 						HitBaseDamage = QuerySurfaceTypeToChangeBaseDamage(HitResult[i]);
 						if (!ULightProjectTeamComponent::IsFriendlyTeam(HitActor, Player))
 						{
+							UE_LOG(LogTemp, Log, TEXT("AttackHitSuccessfully"));
 							UGameplayStatics::ApplyPointDamage(HitActor, HitBaseDamage, HitDirection, HitResult[i], MyCharacter->GetController(), Player, DamageTypeClass);
 						}
 						//UGameplayStatics::ApplyDamage(HitActor, 20.f, EventInstigator, Player, DamageTypeClass);
