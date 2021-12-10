@@ -20,5 +20,8 @@ public:
 protected:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	/// <summary>
+	/// ¿ª»á
+	/// </summary>
 	void Fire() override;
 };

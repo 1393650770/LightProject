@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "LightProjectAIBaseCharacter.generated.h"
 
+//AI×´Ì¬µÄÃ¶¾Ù
 UENUM(BlueprintType)
 enum class EAIState :uint8
 {

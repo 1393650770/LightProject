@@ -23,22 +23,40 @@ public:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-
+	/// <summary>
+	/// 是否正在播放声音
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Sound)
-	bool bIsPlaySound=false	;//
+	bool bIsPlaySound=false	;
 
+	/// <summary>
+	/// 脚步声音集合
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
 	TArray <USoundBase*> FootSound;
 
+	/// <summary>
+	/// 脚印材质
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FootMatertial)
 	TArray<UMaterialInterface* > FootPrintMatertial;
 
+	/// <summary>
+	/// 脚印大小
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FootMatertial)
 	FVector FootPrintSize;
 
+	/// <summary>
+	/// 脚印旋转
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FootMatertial)
 	FRotator FootPrintRotation;
+	
 
+	/// <summary>
+	/// 脚印生命周期
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = FootMatertial)
 	float FootPrintLifeSpan = 5.0f;
 

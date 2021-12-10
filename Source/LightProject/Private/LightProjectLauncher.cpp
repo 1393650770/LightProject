@@ -16,6 +16,10 @@ void ALightProjectLauncher::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
+
+/// <summary>
+/// ¿ª»ð
+/// </summary>
 void ALightProjectLauncher::Fire()
 {
 	if (!bIsCanFire)

@@ -14,6 +14,10 @@ void ALightProjectRifle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
+
+/// <summary>
+/// ¿ª»á
+/// </summary>
 void ALightProjectRifle::Fire()
 {
 	if (!bIsCanFire)

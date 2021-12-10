@@ -141,6 +141,9 @@ void ALightProjectCharacter::MouseLookUp(float Val)
 
 }
 
+/// <summary>
+/// 改变为自由视角
+/// </summary>
 void ALightProjectCharacter::ChangeToFreeView()
 {
 	if (!bIsFreeView)
@@ -156,6 +159,10 @@ void ALightProjectCharacter::ChangeToFreeView()
 	}
 }
 
+
+/// <summary>
+/// 改变为自由视角的Tick
+/// </summary>
 void ALightProjectCharacter::ChangeLeaveFreeViewTick(float DeltaTime)
 {
 	
@@ -181,7 +188,9 @@ void ALightProjectCharacter::ChangeLeaveFreeViewTick(float DeltaTime)
 }
 
 
-
+/// <summary>
+/// 改变到瞄准状态
+/// </summary>
 void ALightProjectCharacter::ChangeToIronSight_Implementation()
 {
 	if (!bIsIronsight)
@@ -197,6 +206,9 @@ void ALightProjectCharacter::ChangeToIronSight_Implementation()
 	}
 }
 
+/// <summary>
+/// 改变到瞄准状态的Tick
+/// </summary>
 void ALightProjectCharacter::ChangeToIronSightTick(float DeltaTime)
 {
 	float currentFOV = FollowCamera->FieldOfView;
@@ -204,21 +216,37 @@ void ALightProjectCharacter::ChangeToIronSightTick(float DeltaTime)
 	FollowCamera->SetFieldOfView(lerpFOV);
 }
 
+
+/// <summary>
+/// 获取到角色生命值并转换为百分比
+/// </summary>
 float ALightProjectCharacter::GetHealthToPercent() const
 {
 	return Health/MaxHealth;
 }
 
+
+
+/// <summary>
+/// 获取到生命值
+/// </summary>
 float ALightProjectCharacter::GetHealthToFloat() const
 {
 	return Health;
 }
 
+
+/// <summary>
+/// 获取到bIsIronsight
+/// </summary>
 bool ALightProjectCharacter::GetbIsIronsight() const
 {
 	return bIsIronsight;
 }
 
+/// <summary>
+/// 获取到bIsPlayerSelf
+/// </summary>
 bool ALightProjectCharacter::GetbIsPlayerSelf() const
 {
 	return bIsPlayerSelf;
@@ -235,6 +263,10 @@ void ALightProjectCharacter::CreateDefaultShootWeapon()
 	Weapon->AttachToActor(this, ActorAttachRules,FName(TEXT("WeaponSocket")));
 }
 
+
+/// <summary>
+/// 改变生命值（只能减少）
+/// </summary>
 void ALightProjectCharacter::ChangeHealth(float value)
 {
 	if (GetLocalRole() == ROLE_Authority)
@@ -264,6 +296,11 @@ void ALightProjectCharacter::ChangeHealth(float value)
 	}
 }
 
+
+
+/// <summary>
+/// 改变生命值（只能增加）
+/// </summary>
 void ALightProjectCharacter::AddHealth(float value)
 {
 	if (GetLocalRole() == ROLE_Authority)
@@ -280,6 +317,10 @@ void ALightProjectCharacter::AddHealth(float value)
 	}
 }
 
+
+/// <summary>
+/// 改变角色造成的伤害总量
+/// </summary>
 void ALightProjectCharacter::ChangePlayerTotalDamage(int value)
 {
 	if (GetLocalRole() == ROLE_Authority)
@@ -333,12 +374,19 @@ void ALightProjectCharacter::TouchRepeated(ETouchIndex::Type FingerIndex, FVecto
 	}
 }
 
-void ALightProjectCharacter::StartCrouch()
+/// <summary>
+/// 开启蹲伏
+/// </summary>
+void ALightProjectCharacter::StartCrouch_Implementation()
 {
 	Crouch();
 }
 
-void ALightProjectCharacter::EndCrouch()
+
+/// <summary>
+/// 结束蹲伏
+/// </summary>
+void ALightProjectCharacter::EndCrouch_Implementation()
 {
 	UnCrouch();
 }
@@ -357,12 +405,17 @@ FVector ALightProjectCharacter::GetPawnViewLocation() const
 }
 
 
-
+/// <summary>
+/// 服务器：根据鼠标旋转角色视角
+/// </summary>
 void ALightProjectCharacter::MouseTurnRotation_Implementation()
 {
 	MouseTurnRoationMuticast();
 }
 
+/// <summary>
+/// 广播：根据鼠标旋转角色视角
+/// </summary>
 void ALightProjectCharacter::MouseTurnRoationMuticast_Implementation()
 {
 	if (!bIsFreeView)
@@ -400,6 +453,10 @@ void ALightProjectCharacter::OnRepHealthUpdate()
 	
 }
 
+
+/// <summary>
+/// 当角色更新时调用
+/// </summary>
 void ALightProjectCharacter::OnHealthUpdate()
 {
 	//客户端特定的功能
@@ -430,6 +487,10 @@ void ALightProjectCharacter::OnHealthUpdate()
 	*/
 }
 
+
+/// <summary>
+/// 检查地面物体
+/// </summary>
 void ALightProjectCharacter::CheckGroundObjects()
 {
 	FVector EyeLocation;
@@ -465,11 +526,19 @@ void ALightProjectCharacter::CheckGroundObjects()
 	}
 }
 
+
+/// <summary>
+/// 客户端：调用游戏模式的重生玩家的函数
+/// </summary>
 void ALightProjectCharacter::CallGameModeRespawnPlayerClient()
 {
 	CallGameModeRespawnPlayer();
 }
 
+
+/// <summary>
+/// 服务器：调用游戏模式的重生玩家的函数
+/// </summary>
 void ALightProjectCharacter::CallGameModeRespawnPlayer_Implementation()
 {
 	if (bIsPlayerSelf)

@@ -42,6 +42,10 @@ void ULightProjectTeamComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	// ...
 }
 
+
+/// <summary>
+/// 检测是否是同一个团队
+/// </summary>
 bool ULightProjectTeamComponent::IsFriendlyTeam(AActor* ActorA, AActor* ActorB)
 {
 	if (ActorA==nullptr||ActorB==nullptr)

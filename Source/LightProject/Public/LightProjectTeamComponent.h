@@ -16,6 +16,10 @@ public:
 	// Sets default values for this component's properties
 	ULightProjectTeamComponent();
 
+
+	/// <summary>
+	/// 团队编号
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = TeamComponent)
 	uint8 TeamNum=255;
 
@@ -28,6 +32,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/// <summary>
+	/// 检测是否是同一个团队
+	/// </summary>
 	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "TeamComponent")
 	static bool IsFriendlyTeam(AActor* ActorA,AActor* ActorB);
 };

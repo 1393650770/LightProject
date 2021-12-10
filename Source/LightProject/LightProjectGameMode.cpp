@@ -27,6 +27,9 @@ void ALightProjectGameMode::StartPlay()
 
 
 
+/// <summary>
+/// 当前波数开始
+/// </summary>
 void ALightProjectGameMode::StartWave()
 {
 	
@@ -35,6 +38,10 @@ void ALightProjectGameMode::StartWave()
 	GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ALightProjectGameMode::SpawnBotTimerElapsed, TimeBetweenSPawnAI, true, 0.0f);
 }
 
+
+/// <summary>
+/// 当前波数结束
+/// </summary>
 void ALightProjectGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
@@ -48,12 +55,20 @@ void ALightProjectGameMode::EndWave()
 
 }
 
+
+/// <summary>
+/// 永久结束波数
+/// </summary>
 void ALightProjectGameMode::AlwaysEndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
 	GetWorldTimerManager().ClearTimer(TimerHandle_NextWaveStart);
 }
 
+
+/// <summary>
+///第一波开始
+/// </summary>
 void ALightProjectGameMode::FirstWave()
 {
 	if (WaveCount < MaxWaveCount)
@@ -64,6 +79,10 @@ void ALightProjectGameMode::FirstWave()
 	}
 }
 
+
+/// <summary>
+/// 准备开始下一波
+/// </summary>
 void ALightProjectGameMode::PrepareNextWave()
 {
 	if (WaveCount < MaxWaveCount)
@@ -72,6 +91,10 @@ void ALightProjectGameMode::PrepareNextWave()
 	}
 }
 
+
+/// <summary>
+/// 生成敌人的函数
+/// </summary>
 void ALightProjectGameMode::SpawnBotTimerElapsed()
 {
 	SpawnNewBot();
@@ -83,6 +106,9 @@ void ALightProjectGameMode::SpawnBotTimerElapsed()
 	}
 }
 
+/// <summary>
+/// 第一波函数产生时调用的定时函数
+/// </summary>
 void ALightProjectGameMode::FirstWaveStartOnCall()
 {
 	FirstWaveStartBlurPrint();

@@ -21,6 +21,9 @@ class ILightProjectIWeaponAPI
 
 public:
 
+	/// <summary>
+	/// 获取Weapon的蓝图事件接口
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon")
 	ALightProjectWeapon*  GetWeaponType(EWeaponType& WeaponType,FName& SocketName);
 };

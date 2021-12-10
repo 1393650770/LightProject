@@ -21,6 +21,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Controller)
 	TSubclassOf<AActor> PlayerStartClass; 
 public:
+
+	/// <summary>
+	/// 服务器：重生玩家事件
+	/// </summary>
 	UFUNCTION(Server, Reliable)
 	void RespawnPlayerEvent(AController* Controller);
 };

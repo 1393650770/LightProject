@@ -22,6 +22,10 @@ ALightProjectPlayerController::ALightProjectPlayerController()
 
 }
 
+
+/// <summary>
+/// 服务器：重生玩家事件
+/// </summary>
 void ALightProjectPlayerController::RespawnPlayerEvent_Implementation(AController* Controller)
 {
 	Controller->GetPawn()->Destroyed();

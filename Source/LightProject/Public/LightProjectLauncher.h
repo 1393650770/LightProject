@@ -22,11 +22,20 @@ protected:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	/// <summary>
+	/// 子弹类型组
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<ALightProjectProjectile> ProjectileClass;
 
+	/// <summary>
+	/// 相机旋转偏移
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FRotator CameraRotatorOffset;
 
+	/// <summary>
+	/// 开会
+	/// </summary>
 	void Fire() override;
 };

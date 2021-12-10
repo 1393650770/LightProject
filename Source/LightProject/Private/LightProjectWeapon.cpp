@@ -38,6 +38,10 @@ void ALightProjectWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 }
 
+
+/// <summary>
+/// 暂停开火
+/// </summary>
 void ALightProjectWeapon::ComeInCooldownFire()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_FireCooldown);
@@ -46,12 +50,19 @@ void ALightProjectWeapon::ComeInCooldownFire()
 	bIsCanFire = false;
 }
 
+
+/// <summary>
+/// 改变bIsFire到true
+/// </summary>
 void ALightProjectWeapon::ChangebIsCanFireToTrue()
 {
 	bIsCanFire = true;
 	GetWorldTimerManager().ClearTimer(TimerHandle_FireCooldown);
 }
 
+/// <summary>
+/// 开火
+/// </summary>
 void ALightProjectWeapon::Fire()
 {
 	if (!bIsCanFire)
@@ -150,6 +161,10 @@ void ALightProjectWeapon::Fire()
 	}
 }
 
+
+/// <summary>
+/// 射线检测
+/// </summary>
 FVector ALightProjectWeapon::RayTraceShootingSight()
 {
 	AActor* const MyOwner = GetOwner();
@@ -176,6 +191,10 @@ FVector ALightProjectWeapon::RayTraceShootingSight()
 	return TraceEnd;
 }
 
+
+/// <summary>
+/// 获取子弹发射方向偏移（弃用）
+/// </summary>
 FRotator ALightProjectWeapon::GetProjectileRotation(FHitResult& Hit,bool& result)
 {
 	FRotator FinalRotator = FRotator::ZeroRotator;
@@ -203,11 +222,17 @@ FRotator ALightProjectWeapon::GetProjectileRotation(FHitResult& Hit,bool& result
 	return FinalRotator;
 }
 
+/// <summary>
+/// 服务器：播放爆炸特效
+/// </summary>
 void ALightProjectWeapon::PlayExplosionEffectServer_Implementation(FVector Positon, FRotator Rotation)
 {
 	PlayExplosionEffectMulticast(Positon, Rotation);
 }
 
+/// <summary>
+/// 多播：播放爆炸特效
+/// </summary>
 void ALightProjectWeapon::PlayExplosionEffectMulticast_Implementation(FVector Positon, FRotator Rotation)
 {
 	UWorld* const World = GetWorld();
@@ -219,11 +244,18 @@ void ALightProjectWeapon::PlayExplosionEffectMulticast_Implementation(FVector Po
 
 }
 
+
+/// <summary>
+/// 服务器：播放开火和轨迹特效
+/// </summary>
 void ALightProjectWeapon::PlayFireAndTraceEffectServer_Implementation(FVector Positon)
 {
 	PlayFireAndTraceEffectMulticast(Positon);
 }
 
+/// <summary>
+/// 多播：播放开火和轨迹特效
+/// </summary>
 void ALightProjectWeapon::PlayFireAndTraceEffectMulticast_Implementation(FVector Positon)
 {
 	

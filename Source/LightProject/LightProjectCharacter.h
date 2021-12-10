@@ -11,6 +11,8 @@ class FFloat16;
 class AActor;
 class UAnimMontage;
 
+//Weapon的类型
+
 UENUM(BlueprintType)
 enum class EWeaponType :uint8
 {
@@ -18,6 +20,8 @@ enum class EWeaponType :uint8
 	Rifle=1,
 	Launcher=2
 };
+
+//Weapon的所有者
 
 UENUM(BlueprintType)
 enum class EWeaponMaster :uint8
@@ -28,6 +32,7 @@ enum class EWeaponMaster :uint8
 	Enemy=12
 };
 
+//Weapon属性的结构体
 
 USTRUCT(BlueprintType)
 struct FWeaponSlot
@@ -113,9 +118,15 @@ protected:
 /// </summary>
 protected:
 
+	/// <summary>
+	/// 是否是游戏彻底结束了
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Player)
 	bool bIsGameOver = false;
 
+	/// <summary>
+	/// 创建默认的武器
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void CreateDefaultShootWeapon();
 
@@ -125,52 +136,102 @@ protected:
 	UFUNCTION()
 	void MouseLookUp(float Val);
 
+	/// <summary>
+	/// 改变为自由视角
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeToFreeView();
 
+	/// <summary>
+	/// 改变为自由视角的Tick
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeLeaveFreeViewTick(float DeltaTime);
 
-
+	/// <summary>
+	/// 改变到瞄准状态的Tick
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeToIronSightTick(float DeltaTime);
 
+	/// <summary>
+	/// 改变到瞄准状态
+	/// </summary>
 	UFUNCTION(BlueprintCallable,Server,Reliable,Category = Player)
 	void ChangeToIronSight();
 
-	UFUNCTION()
+	/// <summary>
+	/// 开启蹲伏
+	/// </summary>
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = Player)
 	void StartCrouch();
-	UFUNCTION()
+
+	/// <summary>
+	/// 结束蹲伏
+	/// </summary>
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = Player)
 	void EndCrouch();
 
+	/// <summary>
+	/// 重载的获取Pawn的视角位置
+	/// </summary>
+	/// <returns></returns>
 	virtual FVector GetPawnViewLocation() const;
 
+	/// <summary>
+	/// 服务器：根据鼠标旋转角色视角
+	/// </summary>
 	UFUNCTION(Server,Reliable)
 	void MouseTurnRotation();
 
+	/// <summary>
+	/// 广播：根据鼠标旋转角色视角
+	/// </summary>
 	UFUNCTION(NetMulticast, Unreliable)
 	void MouseTurnRoationMuticast();
 
 	UFUNCTION()
 	void OnRepHealthUpdate();
 
+	/// <summary>
+	/// 当角色更新时调用
+	/// </summary>
 	void OnHealthUpdate();
 
+	/// <summary>
+	/// 检查地面物体
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void CheckGroundObjects();
 
+
+	/// <summary>
+	/// 检查地面物体发现有物体的蓝图事件
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent ,Category = Player)
 	void OnCheckGroundObjects(FHitResult Hit);
 
+	/// <summary>
+	/// 检查地面物体发现没有物体的蓝图事件
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnCheckGroundNoObjects();
 
+	/// <summary>
+	/// 当改变角色血量的蓝图事件
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void OnChangerCharacterHealth();
 
-
+	/// <summary>
+	/// 客户端：调用游戏模式的重生玩家的函数
+	/// </summary>
 	void CallGameModeRespawnPlayerClient();
 
+
+	/// <summary>
+	/// 服务器：调用游戏模式的重生玩家的函数
+	/// </summary>
 	UFUNCTION(Server,Reliable)
 	void CallGameModeRespawnPlayer();
 
@@ -184,101 +245,209 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	/// <summary>
+	/// 角色的旋转Yaw
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	float ClientYaw = 0.0f;
 
+
+	/// <summary>
+	/// 角色的旋转Pitch
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	float ClientPitch = 0.0f;
 
+
+	/// <summary>
+	/// 改变生命值（只能减少）
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangeHealth(float value) ;
 
+
+	/// <summary>
+	/// 改变生命值（只能增加）
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void AddHealth(float value);
 
+	/// <summary>
+	/// 改变角色造成的伤害总量
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	void ChangePlayerTotalDamage(int value);
 	
+
+	/// <summary>
+	/// 改变角色的伤害总量的蓝图事件
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent, Category = Player)
 	void ChangePlayerTotalDamageBluePrint(int value);
 
+	/// <summary>
+	/// 获取到角色生命值并转换为百分比
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	float GetHealthToPercent() const;
 
+	/// <summary>
+	/// 获取到生命值
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	float GetHealthToFloat() const;
 
+	/// <summary>
+	/// 获取到bIsIronsight
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	bool GetbIsIronsight() const;
 
+	/// <summary>
+	/// 获取到bIsPlayerSelf
+	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	bool GetbIsPlayerSelf() const;
+
+
 /// <summary>
 /// 自定义的protected属性
 /// </summary>
 protected:
+
+	/// <summary>
+	/// 是否是玩家
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = Player)
 	bool bIsPlayerSelf = false;
 
+	/// <summary>
+	/// 是否是代理（弃用）
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
 	bool  bIsAuthority = false;
 
+	/// <summary>
+	/// 玩家名称
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Player)
 	FName PlayerName = TEXT("Player");
 
+	/// <summary>
+	/// 当前生命值
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRepHealthUpdate, Category = Player)
 	float Health = 100.0f;
+
+	/// <summary>
+	/// 最大生命值
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, Category = Player)
 	float MaxHealth = 100.0f;
 
+	/// <summary>
+	/// 玩家造成的伤害总量
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Player)
 	int32 PlayerTotalDamage = 0;
 
+
+	/// <summary>
+	/// 角色当前的武器
+	/// </summary>
 	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
 	ALightProjectWeapon* Weapon=nullptr;
 
+	/// <summary>
+	/// 是否在瞄准状态
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Player)
 	bool bIsIronsight = false;
 
+	/// <summary>
+	/// 目标的FOV
+	/// </summary>
 	float TargetFOV;
 
+	/// <summary>
+	/// 是否在自由视角
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	bool bIsFreeView = false;
 
+	/// <summary>
+	/// 是否从自由视角改变
+	/// </summary>
 	bool bIsChangeAwayFromFreeView = false;
+
 
 	FRotator FreeViewRotation;
 
+	/// <summary>
+	/// 重新生成角色的定时器句柄
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Player)
 	FTimerHandle TimerHandle_ReSpawnerPlayer;
 
+
+	/// <summary>
+	/// 默认的FOV
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	float DefaultFOV =50.0f;
 
+	/// <summary>
+	/// 瞄准状态下的FOV
+	/// </summary>
 	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
 	float IronsightFOV = 50.0f;
-		
+	
+	/// <summary>
+	/// 瞄准状态FOV的切换速度
+	/// </summary>
 	UPROPERTY(EditdefaultsOnly, BlueprintReadWrite, Category = Player)
 	float IronsightInterpSpeed = 50.0f;
 
+	/// <summary>
+	/// 当前武器类型
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated,Category = Player)
 	EWeaponType WeaponType = EWeaponType::Fist;
-
+	
+	/// <summary>
+	/// 检查物体的距离
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = PlayerDetectObject)
 	int32 DetectObjectDistance = 200;
 
+
+	/// <summary>
+	/// 检查物体的距离
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = PlayerDetectObject)
 	float DetectObjectRadius = 20.0f;
 	
+	/// <summary>
+	/// 检测的物体类型
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = PlayerDetectObject)
 	TArray<TEnumAsByte<EObjectTypeQuery> > DetectObjectTypes;
 
+	/// <summary>
+	/// 检测忽略的Actors
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = PlayerDetectObject)
 	TArray<AActor*> DetectObjectActorsToIgnore;
 
+	/// <summary>
+	/// 当前拥有的武器列表
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = Player)
 	TArray<FWeaponSlot> WeaponList;
 
+	/// <summary>
+	/// 动画蒙太奇列表
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Anim)
 	TArray<UAnimMontage*> AnimMontageArray;
 
