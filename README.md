@@ -1,6 +1,6 @@
 # LightProject
-------Readme脱敏-----------
-一.【开发日志】：
+------Readme public 脱敏-----------
+
 
 【主要说明】：项目源码在主分支main上，Readme下面有【操作说明】
 
