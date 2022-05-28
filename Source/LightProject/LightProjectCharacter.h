@@ -309,6 +309,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Player)
 	bool GetbIsPlayerSelf() const;
 
+	/// <summary>
+	/// 获取到角色当前的武器
+	/// </summary>
+	UFUNCTION(BlueprintCallable, Category = Player)
+	ALightProjectWeapon* GetWeapon() const;
+
+
+	/// <summary>
+	/// 获取到角色当前的武器类型
+	/// </summary>
+	UFUNCTION(BlueprintCallable, Category = Player)
+	EWeaponType GetWeaponType() const;
 
 /// <summary>
 /// 自定义的protected属性

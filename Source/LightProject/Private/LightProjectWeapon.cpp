@@ -26,6 +26,20 @@ ALightProjectWeapon::ALightProjectWeapon()
 }
 
 
+void ALightProjectWeapon::AddBulletNum_Implementation(int num)
+{
+	if (num < 0)
+	{
+		num = 0;
+	}
+	
+	CurrentBulletNum += num;
+	if (CurrentBulletNum > MaxBulletNum)
+	{
+		CurrentBulletNum = MaxBulletNum;
+	}
+}
+
 void ALightProjectWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -33,6 +47,8 @@ void ALightProjectWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	SharedParams.Condition = ELifetimeCondition::COND_None;
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, bIsCanFire, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, bIsFireAlways, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, MaxBulletNum, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, CurrentBulletNum, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, TimerHandle_FireCooldown, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ALightProjectWeapon, WeaponMaster, SharedParams);
 

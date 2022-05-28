@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"CoreUObject"
+				"CoreUObject",
+				"AnimGraphRuntime"
 			]
 		}
 	],
@@ -21,6 +22,10 @@
 		},
 		{
 			"Name": "RawInput",
+			"Enabled": true
+		},
+		{
+			"Name": "HoudiniEngine",
 			"Enabled": true
 		}
 	]

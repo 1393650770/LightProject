@@ -24,6 +24,13 @@ public:
 	// Sets default values for this actor's properties
 	ALightProjectWeapon();
 
+	/// <summary>
+	/// 服务器：播放爆炸特效
+	/// </summary>
+	UFUNCTION(Server, Reliable)
+	void AddBulletNum(int num);
+
+
 
 protected:
 
@@ -40,6 +47,18 @@ protected:
 	/// </summary>
 	UPROPERTY(EditDefaultsOnly,  BlueprintReadOnly, Category = Weapon)
 	float BulletSpread = 10.f;
+	
+	/// <summary>
+	/// 当前的子弹数
+	/// </summary>
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = Weapon)
+	float CurrentBulletNum = 30.f;
+
+	/// <summary>
+	/// 最大的子弹数
+	/// </summary>
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = Weapon)
+	float MaxBulletNum = 30.f;
 
 
 	/// <summary>

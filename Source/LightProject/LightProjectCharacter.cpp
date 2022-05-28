@@ -252,6 +252,16 @@ bool ALightProjectCharacter::GetbIsPlayerSelf() const
 	return bIsPlayerSelf;
 }
 
+ALightProjectWeapon* ALightProjectCharacter::GetWeapon() const
+{
+	return Weapon;
+}
+
+EWeaponType ALightProjectCharacter::GetWeaponType() const
+{
+	return WeaponType;
+}
+
 void ALightProjectCharacter::CreateDefaultShootWeapon()
 {
 	FActorSpawnParameters ActorSpawnParams;
