@@ -94,6 +94,10 @@ void ALightProjectWeapon::Fire()
 	UWorld* const World = GetWorld();
 	APawn* const MyPawn = Cast<APawn>(MyOwner);
 	ALightProjectCharacter* PlayerCharacter= Cast<ALightProjectCharacter>(MyOwner);
+	if (PlayerCharacter->IsReloading)
+	{
+		return;
+	}
 
 	if (MyOwner->GetVelocity().Size() > 1.0f && PlayerCharacter->bIsCrouched)
 	{
