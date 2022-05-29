@@ -16,6 +16,7 @@
 #include "LightProjectTeamComponent.h"
 #include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 
+
 // Sets default values
 ALightProjectWeapon::ALightProjectWeapon()
 {
@@ -93,10 +94,12 @@ void ALightProjectWeapon::Fire()
 	UWorld* const World = GetWorld();
 	APawn* const MyPawn = Cast<APawn>(MyOwner);
 	ALightProjectCharacter* PlayerCharacter= Cast<ALightProjectCharacter>(MyOwner);
+
 	if (MyOwner->GetVelocity().Size() > 1.0f && PlayerCharacter->bIsCrouched)
 	{
 		return;	
 	}
+
 	float MyOwnerActorRotationYaw = MyOwner->GetActorRotation().Yaw;
 
 	if (abs(MyOwnerActorRotationYaw +360- MyPawn->GetViewRotation().Yaw) > 91.0f&& abs(MyOwnerActorRotationYaw  - MyPawn->GetViewRotation().Yaw) > 91.0f)
@@ -174,6 +177,13 @@ void ALightProjectWeapon::Fire()
 
 		PlayFireAndTraceEffectServer(TraceEndPoint);
 		ComeInCooldownFire();
+		CurrentBulletNum--;
+		if (CurrentBulletNum <= 0)
+		{
+			bIsCanFire = false;
+			PlayerCharacter->PlayAnimMontage(ReloadMontage, 1.0f, ReloadSectionName);
+			UE_LOG(LogTemp, Log, TEXT("Play Montage!!!!!!!!!!!!"));
+		}
 	}
 }
 

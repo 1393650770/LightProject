@@ -15,6 +15,7 @@ class USoundBase;
 class FLifetimeProperty;
 
 
+
 UCLASS()
 class LIGHTPROJECT_API ALightProjectWeapon : public AActor 
 {
@@ -25,7 +26,7 @@ public:
 	ALightProjectWeapon();
 
 	/// <summary>
-	/// 服务器：播放爆炸特效
+	/// 服务器：子弹数增加
 	/// </summary>
 	UFUNCTION(Server, Reliable)
 	void AddBulletNum(int num);
@@ -76,6 +77,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,  BlueprintReadOnly,Category=Components)
 	USkeletalMeshComponent* MeshComp;
+
+	/// <summary>
+	/// 装弹的蒙太奇
+	/// </summary>
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Montage)
+	UAnimMontage* ReloadMontage;
+
+	/// <summary>
+	/// 装弹的蒙太奇播放的Section
+	/// </summary>
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Montage)
+	FName ReloadSectionName;
 
 	/// <summary>
 	/// 子弹路径粒子特效
