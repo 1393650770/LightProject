@@ -327,18 +327,27 @@ public:
 
 
 	/// <summary>
-	/// 服务器：调用游戏模式的重生玩家的函数
+	/// 服务器：调用玩家重装子弹的函数
 	/// </summary>
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void PlayReloadMontageServerByCharacter(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 	void PlayReloadMontageServerByCharacter_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
 	/// <summary>
-	/// 服务器：调用游戏模式的重生玩家的函数
+	/// 多播：调用玩家重装子弹的函数
 	/// </summary>
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void PlayReloadMontageMulticastByCharacter(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 	void PlayReloadMontageMulticastByCharacter_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+
+	/// <summary>
+	/// 服务器：设置reloading 为false
+	/// </summary>
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SetReloadFalseServerByCharacter();
+	void SetReloadFalseServerByCharacter_Implementation();
+
+
 
 /// <summary>
 /// 自定义的protected属性

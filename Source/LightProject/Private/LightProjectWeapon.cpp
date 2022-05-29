@@ -82,7 +82,7 @@ void ALightProjectWeapon::ChangebIsCanFireToTrue()
 /// </summary>
 void ALightProjectWeapon::Fire()
 {
-	if (!bIsCanFire)
+	if (!bIsCanFire||CurrentBulletNum<=0)
 	{
 		return;
 	}
@@ -144,26 +144,26 @@ void ALightProjectWeapon::Fire()
 				switch (HitSurfaceType)
 				{
 				case SurfaceType_Default:
-					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=SurfaceType_Default"));
+					//UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=SurfaceType_Default"));
 					break;
 				case SurfaceType1://SurfaceType1=ActorBody
-					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorBody"));
+					//UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorBody"));
 					HitBaseDamage = rand() % (int)Attack + 1;
 					break;
 				case SurfaceType2://SurfaceType2=ActorHead
-					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorHead"));
+					//UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorHead"));
 					HitBaseDamage = rand() % (int)Attack + 81;
 					break;
 				case SurfaceType3://SurfaceType3=ActorFoot
-					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorFoot"));
+					//UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorFoot"));
 					HitBaseDamage = rand() % ((int)Attack / 2) + 1;
 					break;
 				case SurfaceType4://SurfaceType4=ActorHand
-					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorHand"));
+					//UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=ActorHand"));
 					HitBaseDamage = rand() % ((int)Attack / 2) + 1;
 					break;
 				default:
-					UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=Error"));
+					//UE_LOG(LogTemp, Log, TEXT("HitSurfaceType=Error"));
 					break;
 				}
 

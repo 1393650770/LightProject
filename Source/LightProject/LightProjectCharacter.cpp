@@ -351,14 +351,22 @@ void ALightProjectCharacter::ChangePlayerTotalDamage(int value)
 void ALightProjectCharacter::PlayReloadMontageServerByCharacter_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
 {
 	IsReloading = true;
-	PlayReloadMontageMulticastByCharacter(AnimMontage, 1.0f, StartSectionName);
-	UE_LOG(LogTemp, Log, TEXT("Play Montage!!!!!!!!!!!!"));
+	if (IsReloading)
+	{
+		PlayReloadMontageMulticastByCharacter(AnimMontage, 1.0f, StartSectionName);
+		UE_LOG(LogTemp, Log, TEXT("Play Montage!!!!!!!!!!!!"));
+	}
 }
 
 void ALightProjectCharacter::PlayReloadMontageMulticastByCharacter_Implementation(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
 {
 	this->PlayAnimMontage(AnimMontage, 1.0f, StartSectionName);
 	UE_LOG(LogTemp, Log, TEXT("Play Montage Multicast!!!!!!!!!!!!"));
+}
+
+void ALightProjectCharacter::SetReloadFalseServerByCharacter_Implementation()
+{
+	IsReloading = false;
 }
 
 

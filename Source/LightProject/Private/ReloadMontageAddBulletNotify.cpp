@@ -43,7 +43,8 @@ void UReloadMontageAddBulletNotify::NotifyBegin(USkeletalMeshComponent* MeshComp
 					weapon->AddBulletNum(1);
 				}
 			}
-			MyCharacter->IsReloading = false;
+			MyCharacter->SetReloadFalseServerByCharacter();
+			UE_LOG(LogTemp, Log, TEXT("Play Montage Finish!!!!!!!!!!!!"));
 		}
 	}
 }

@@ -53,13 +53,13 @@ protected:
 	/// 当前的子弹数
 	/// </summary>
 	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = Weapon)
-	float CurrentBulletNum = 30.f;
+	int CurrentBulletNum = 30.f;
 
 	/// <summary>
 	/// 最大的子弹数
 	/// </summary>
 	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = Weapon)
-	float MaxBulletNum = 30.f;
+	int MaxBulletNum = 30.f;
 
 
 	/// <summary>
