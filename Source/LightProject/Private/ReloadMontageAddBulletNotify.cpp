@@ -32,15 +32,18 @@ void UReloadMontageAddBulletNotify::NotifyBegin(USkeletalMeshComponent* MeshComp
 		{
 			ALightProjectWeapon* weapon = MyCharacter->GetWeapon();
 			EWeaponType weapon_type = MyCharacter->GetWeaponType();
-			if (weapon_type == EWeaponType::Rifle)
+			if (weapon)
 			{
-
-				weapon->AddBulletNum(30);
+				if (weapon_type == EWeaponType::Rifle)
+				{
+					weapon->AddBulletNum(30);
+				}
+				else
+				{
+					weapon->AddBulletNum(1);
+				}
 			}
-			else
-			{
-				weapon->AddBulletNum(1);
-			}
+			MyCharacter->IsReloading = false;
 		}
 	}
 }

@@ -180,9 +180,7 @@ void ALightProjectWeapon::Fire()
 		CurrentBulletNum--;
 		if (CurrentBulletNum <= 0)
 		{
-			bIsCanFire = false;
-			PlayerCharacter->PlayAnimMontage(ReloadMontage, 1.0f, ReloadSectionName);
-			UE_LOG(LogTemp, Log, TEXT("Play Montage!!!!!!!!!!!!"));
+			PlayerCharacter->PlayReloadMontageServerByCharacter(ReloadMontage, 1.0f, ReloadSectionName);
 		}
 	}
 }

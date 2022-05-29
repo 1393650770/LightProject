@@ -258,6 +258,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
 	float ClientPitch = 0.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated,Category = Player)
+	bool IsReloading = false;
+
 
 	/// <summary>
 	/// 改变生命值（只能减少）
@@ -321,6 +324,21 @@ public:
 	/// </summary>
 	UFUNCTION(BlueprintCallable, Category = Player)
 	EWeaponType GetWeaponType() const;
+
+
+	/// <summary>
+	/// 服务器：调用游戏模式的重生玩家的函数
+	/// </summary>
+	UFUNCTION(BlueprintCallable,Server, Reliable)
+	void PlayReloadMontageServerByCharacter(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	void PlayReloadMontageServerByCharacter_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+
+	/// <summary>
+	/// 服务器：调用游戏模式的重生玩家的函数
+	/// </summary>
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void PlayReloadMontageMulticastByCharacter(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	void PlayReloadMontageMulticastByCharacter_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
 /// <summary>
 /// 自定义的protected属性
