@@ -35,7 +35,7 @@ protected:
 	FRotator CameraRotatorOffset;
 
 	/// <summary>
-	/// ¿ª»á
+	/// ¿ª»ð
 	/// </summary>
 	void Fire() override;
 };
